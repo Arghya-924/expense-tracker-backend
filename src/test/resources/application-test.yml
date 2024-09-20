@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: expense-tracker-backend
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: ''
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+jwt:
+  secret: "sCoFYMXO6EqzLaKXKlp9Mc2DkKdnAV3lSmGGDqunVvA="
+  expiration: 300000
