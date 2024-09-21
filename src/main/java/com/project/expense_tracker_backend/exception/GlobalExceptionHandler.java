@@ -44,6 +44,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, WebRequest request) {
+        ex.printStackTrace();
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 ApplicationConstants.STATUS_FAILURE,
                 HttpStatus.INTERNAL_SERVER_ERROR,

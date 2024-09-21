@@ -35,7 +35,9 @@ public class ExpenseController {
 
             List<ExpenseResponseDto> userExpenses = expenseService.getUserExpenses(yearMonth, userId);
 
-            return new ResponseEntity<>(new UserExpensesResponse<>(userExpenses), HttpStatus.OK);
+            Double totalMonthlyExpense = expenseService.getTotalMonthlyUserExpense(yearMonth, userId);
+
+            return new ResponseEntity<>(new UserExpensesResponse<>(userExpenses, totalMonthlyExpense), HttpStatus.OK);
 
         } catch (DateTimeParseException dateTimeParseException) {
             log.error("ExpenseController | getUserExpenses | Exception : {}", dateTimeParseException.getLocalizedMessage());
