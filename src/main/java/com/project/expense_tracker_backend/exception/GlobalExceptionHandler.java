@@ -42,6 +42,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             case null, default -> throw ex;
         };
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, WebRequest request) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                ApplicationConstants.STATUS_FAILURE,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                request.getDescription(false),
+                List.of(ex.getLocalizedMessage())
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
+
+    }
 
     private ResponseEntity<Object> handleExpenseNotFoundException(ExpenseNotFoundException expenseNotFoundException, WebRequest request) {
 
