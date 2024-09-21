@@ -1,8 +1,10 @@
 package com.project.expense_tracker_backend;
 
+import com.project.expense_tracker_backend.model.AggregateExpense;
 import com.project.expense_tracker_backend.model.Category;
 import com.project.expense_tracker_backend.model.Expense;
 import com.project.expense_tracker_backend.model.User;
+import com.project.expense_tracker_backend.repository.AggregateExpenseRepository;
 import com.project.expense_tracker_backend.repository.CategoryRepository;
 import com.project.expense_tracker_backend.repository.ExpenseRepository;
 import com.project.expense_tracker_backend.repository.UserRepository;
@@ -14,6 +16,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.Year;
+import java.util.Date;
 
 @SpringBootApplication
 @AllArgsConstructor
@@ -23,6 +29,7 @@ public class ExpenseTrackerBackendApplication {
 	private UserRepository userRepository;
 	private ExpenseRepository expenseRepository;
 	private CategoryRepository categoryRepository;
+	private AggregateExpenseRepository aggregateExpenseRepository;
 
 	@PostConstruct
 	public void init() {
@@ -33,8 +40,8 @@ public class ExpenseTrackerBackendApplication {
 		category1 = categoryRepository.save(category1);
 		category2 = categoryRepository.save(category2);
 
-		User user1 = new User(0L, "Arghya", "arghya924@gmail.com", "12345", "1234456667");
-		User user2 = new User(0L, "Ashmita", "dasashmita30@gmail.com", "12345", "1234567890");
+		User user1 = new User(0L, "Arghya", "test1@gmail.com", "12345", "1234456667");
+		User user2 = new User(0L, "Ashmita", "test2@gmail.com", "12345", "1234567890");
 
 		user1 = userRepository.save(user1);
 		user2 = userRepository.save(user2);
@@ -47,6 +54,11 @@ public class ExpenseTrackerBackendApplication {
 		expenseRepository.save(expense2);
 		expenseRepository.save(expense3);
 
+		AggregateExpense aggregateExpense1 = new AggregateExpense(0L, user1, Month.of(new Date().getMonth() + 1), Year.now().getValue(), (double)95000);
+		AggregateExpense aggregateExpense2 = new AggregateExpense(0L, user2, Month.of(new Date().getMonth() + 1), Year.now().getValue(), (double)500);
+
+		aggregateExpenseRepository.save(aggregateExpense1);
+		aggregateExpenseRepository.save(aggregateExpense2);
 
 	}
 

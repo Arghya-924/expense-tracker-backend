@@ -56,7 +56,7 @@ public class ExpenseController {
             return ResponseEntity.status(HttpStatus.CREATED).body(savedUserExpenses);
         } catch (UserNotFoundException userNotFoundException) {
 
-            log.error("saveUserExpensesController | Exception occured: {}", userNotFoundException.getLocalizedMessage());
+            log.error("saveUserExpensesController | Exception occurred: {}", userNotFoundException.getLocalizedMessage());
             throw userNotFoundException;
         }
     }

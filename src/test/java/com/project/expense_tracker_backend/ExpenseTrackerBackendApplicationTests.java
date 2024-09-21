@@ -115,7 +115,7 @@ class ExpenseTrackerBackendApplicationTests {
     @Order(3)
     void testLoggingController_invalid_password() throws Exception {
 
-        LoginRequestDto loginRequestDto = new LoginRequestDto("arghya924@gmail.com", "invalid_password");
+        LoginRequestDto loginRequestDto = new LoginRequestDto("test1@gmail.com", "invalid_password");
 
         var loginResponse = mockMvc.perform(MockMvcRequestBuilders.post("/public/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -141,17 +141,7 @@ class ExpenseTrackerBackendApplicationTests {
     @Order(4)
     void testLoggingControllerSuccess() throws Exception {
 
-        LoginRequestDto loginRequestDto = new LoginRequestDto("arghya924@gmail.com", "12345");
-
-        var loginResponse = mockMvc.perform(MockMvcRequestBuilders.post("/public/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequestDto)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        String authResponse = loginResponse.getResponse().getContentAsString();
-
-        LoginResponseDto loginResponseDto = objectMapper.readValue(authResponse, LoginResponseDto.class);
+        LoginResponseDto loginResponseDto = loginUser("test1@gmail.com", "12345");
 
         assertNotNull(loginResponseDto);
         assertNotNull(loginResponseDto.getAuthToken());
@@ -164,20 +154,10 @@ class ExpenseTrackerBackendApplicationTests {
 
         long userId = 1L;
 
-        LoginRequestDto loginRequestDto = new LoginRequestDto("arghya924@gmail.com", "12345");
-
-        var loginResponse = mockMvc.perform(MockMvcRequestBuilders.post("/public/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequestDto)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        String authResponse = loginResponse.getResponse().getContentAsString();
-
-        LoginResponseDto loginResponseDto = objectMapper.readValue(authResponse, LoginResponseDto.class);
+        LoginResponseDto mockLogin = loginUser("test1@gmail.com", "12345");
 
         var apiResponse = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
-                        .header("Authorization", "Bearer " + loginResponseDto.getAuthToken())
+                        .header("Authorization", "Bearer " + mockLogin.getAuthToken())
 //                        .param("userId", String.valueOf(userId))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -202,20 +182,10 @@ class ExpenseTrackerBackendApplicationTests {
     @Order(6)
     void testGetUserExpensesFromExpenseController_Year_Month_Format() throws Exception {
 
-        LoginRequestDto loginRequestDto = new LoginRequestDto("arghya924@gmail.com", "12345");
-
-        var loginResponse = mockMvc.perform(MockMvcRequestBuilders.post("/public/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequestDto)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        String authResponse = loginResponse.getResponse().getContentAsString();
-
-        LoginResponseDto loginResponseDto = objectMapper.readValue(authResponse, LoginResponseDto.class);
+        LoginResponseDto mockLogin = loginUser("test1@gmail.com", "12345");
 
         var apiResponse = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
-                        .header("Authorization", "Bearer " + loginResponseDto.getAuthToken())
+                        .header("Authorization", "Bearer " + mockLogin.getAuthToken())
                         .param("yearMonth", "slfgsa")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -229,17 +199,7 @@ class ExpenseTrackerBackendApplicationTests {
 
         long userId = 2L;
 
-        LoginRequestDto loginRequestDto = new LoginRequestDto("dasashmita30@gmail.com", "12345");
-
-        var loginResponse = mockMvc.perform(MockMvcRequestBuilders.post("/public/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequestDto)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        String authResponse = loginResponse.getResponse().getContentAsString();
-
-        LoginResponseDto loginResponseDto = objectMapper.readValue(authResponse, LoginResponseDto.class);
+        LoginResponseDto mockLogin = loginUser("test2@gmail.com", "12345");
 
 
         List<ExpenseRequestDto> userExpenses = List.of(
@@ -248,7 +208,7 @@ class ExpenseTrackerBackendApplicationTests {
 
 
         var apiResponse = mockMvc.perform(MockMvcRequestBuilders.post("/api/expenses")
-                        .header("Authorization", "Bearer " + loginResponseDto.getAuthToken())
+                        .header("Authorization", "Bearer " + mockLogin.getAuthToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userExpenses)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -300,15 +260,7 @@ class ExpenseTrackerBackendApplicationTests {
     @Order(10)
     void testUpdateExpense_AmountAndDescription() throws Exception {
 
-        LoginRequestDto loginRequestDto = new LoginRequestDto("dasashmita30@gmail.com", "12345");
-
-        var loginUser = mockMvc.perform(MockMvcRequestBuilders.post(ApplicationConstants.LOGIN_USER_API_PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequestDto)))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
-
-        String loginResponse = loginUser.getResponse().getContentAsString();
-        LoginResponseDto mockLogin = objectMapper.readValue(loginResponse, LoginResponseDto.class);
+        LoginResponseDto mockLogin = loginUser("test2@gmail.com", "12345");
 
         var userExpenses = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
                         .header("Authorization", "Bearer " + mockLogin.getAuthToken())
@@ -342,15 +294,8 @@ class ExpenseTrackerBackendApplicationTests {
     @Test
     @Order(11)
     void testDeleteUserExpense_Successful() throws Exception {
-        LoginRequestDto loginRequestDto = new LoginRequestDto("dasashmita30@gmail.com", "12345");
 
-        var loginUser = mockMvc.perform(MockMvcRequestBuilders.post(ApplicationConstants.LOGIN_USER_API_PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequestDto)))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
-
-        String loginResponse = loginUser.getResponse().getContentAsString();
-        LoginResponseDto mockLogin = objectMapper.readValue(loginResponse, LoginResponseDto.class);
+        LoginResponseDto mockLogin = loginUser("test2@gmail.com", "12345");
 
         Optional<Expense> expense = expenseRepository.findById(2L);
 
@@ -366,5 +311,96 @@ class ExpenseTrackerBackendApplicationTests {
 
         assertTrue(category.isPresent());
         assertTrue(expense.isEmpty());
+    }
+
+    private LoginResponseDto loginUser(String username, String password) throws Exception {
+        LoginRequestDto loginRequestDto = new LoginRequestDto(username, password);
+
+        var loginUser = mockMvc.perform(MockMvcRequestBuilders.post(ApplicationConstants.LOGIN_USER_API_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequestDto)))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+
+        String loginResponse = loginUser.getResponse().getContentAsString();
+
+        return objectMapper.readValue(loginResponse, LoginResponseDto.class);
+    }
+
+    @Order(12)
+    @Test
+    void testAddNewExpensesAndCheckTotalExpenseAmount() throws Exception {
+
+        LoginResponseDto loginUser = loginUser("test@gmail.com", "12345");
+
+        List<ExpenseRequestDto> userExpenses = List.of(
+                new ExpenseRequestDto("Pizza", 5000.0, LocalDate.now(), "Food"),
+                new ExpenseRequestDto("Movie", 1000.0, LocalDate.now(), "Entertainment"),
+                new ExpenseRequestDto("Food items", 2000.0, LocalDate.of(2024, 7, 4), "Groceries"),
+                new ExpenseRequestDto("Dress", 5000.0, LocalDate.of(2024, 7, 15), "Shopping"),
+                new ExpenseRequestDto("Book", 300.0, LocalDate.of(2024, 7, 19), "Self help"));
+
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/expenses")
+                        .header("Authorization", "Bearer " + loginUser.getAuthToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userExpenses)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description").value("Pizza"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].category").value("Entertainment"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].description").value("Movie"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].amount").value(5000.0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].category").value("Food"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].category").value("Groceries"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].description").value("Food items"));
+
+        var getResponse = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
+                        .header("Authorization", "Bearer " + loginUser.getAuthToken())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseContent = getResponse.getResponse().getContentAsString();
+
+        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse =
+                objectMapper.readValue(responseContent, new TypeReference<>() {
+                });
+
+        assertEquals(6000.0, userExpensesResponse.getTotalMonthlyExpense());
+
+        List<ExpenseResponseDto> expenseResponseDtoList = userExpensesResponse.getUserExpenses();
+
+        assertEquals(2, expenseResponseDtoList.size());
+
+        assertEquals("Pizza", expenseResponseDtoList.getFirst().getDescription());
+
+        assertEquals(1000.0, expenseResponseDtoList.getLast().getAmount());
+
+    }
+
+    @Test
+    @Order(13)
+    void testGetUserExpensesForPreviousMonth() throws Exception {
+        LoginResponseDto loginUser = loginUser("test@gmail.com", "12345");
+
+        String yearMonth = "2024-07";
+
+        var response = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
+                        .header("Authorization", "Bearer " + loginUser.getAuthToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("yearMonth", yearMonth))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+
+        String responseContent = response.getResponse().getContentAsString();
+
+        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse = objectMapper.readValue(responseContent, new TypeReference<>() {});
+
+        List<ExpenseResponseDto> expenseResponseDtoList = userExpensesResponse.getUserExpenses();
+
+        assertEquals(3, expenseResponseDtoList.size());
+        assertEquals("Food items", expenseResponseDtoList.getFirst().getDescription());
+        assertEquals("Self help", expenseResponseDtoList.getLast().getCategory());
+
+        assertEquals(7300.0, userExpensesResponse.getTotalMonthlyExpense());
+
     }
 }
