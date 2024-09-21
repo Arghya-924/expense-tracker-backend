@@ -33,18 +33,16 @@ public class PublicController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> userLogin(@RequestBody LoginRequestDto loginRequestDto) {
 
-        try{
+        try {
             LoginResponseDto responseDto = loginService.loginUserAndGenerateToken(loginRequestDto);
 
             return ResponseEntity.ok(responseDto);
-        }
-        catch (EmailNotFoundException emailNotFoundException) {
+        } catch (EmailNotFoundException emailNotFoundException) {
 
             log.error("userLogin | EmailNotFoundException: {}", emailNotFoundException.getMessage());
 
             throw emailNotFoundException;
-        }
-        catch (BadCredentialsException badCredentialsException) {
+        } catch (BadCredentialsException badCredentialsException) {
             log.error("userLogin | BadCredentialsException: {}", badCredentialsException.getLocalizedMessage());
 
             throw badCredentialsException;
@@ -54,12 +52,11 @@ public class PublicController {
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody UserRegistrationDto userDetails) {
 
-        try{
+        try {
             loginService.registerNewUser(userDetails);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(ApplicationConstants.USER_REGISTRATION_SUCCESSFUL);
-        }
-        catch (DataIntegrityViolationException ex) {
+        } catch (DataIntegrityViolationException ex) {
             log.error("PublicController | registerUser | Exception: {}", ex.getLocalizedMessage());
 
             throw new DataIntegrityViolationException(

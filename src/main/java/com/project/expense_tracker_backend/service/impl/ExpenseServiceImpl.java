@@ -146,19 +146,71 @@ public class ExpenseServiceImpl implements IExpenseService {
             throw new ExpenseNotFoundException(expenseId, userId);
         }
 
-        BeanUtil.copyNonNullProperties(expenseRequestDto, existingExpense);
+        Expense updatedExpense = new Expense(existingExpense);
+
+        BeanUtil.copyNonNullProperties(expenseRequestDto, updatedExpense);
 
         if (expenseRequestDto.getCategoryName() != null &&
-                !expenseRequestDto.getCategoryName().equals(existingExpense.getCategory().getCategoryName())) {
+                !expenseRequestDto.getCategoryName().equals(updatedExpense.getCategory().getCategoryName())) {
 
             Category category = findOrCreateCategory(expenseRequestDto.getCategoryName());
 
-            existingExpense.setCategory(category);
+            updatedExpense.setCategory(category);
         }
 
-        Expense updatedExpense = expenseRepository.save(existingExpense);
+        updateAggregateExpense(userId, existingExpense, updatedExpense);
+
+        updatedExpense = expenseRepository.save(updatedExpense);
 
         return expenseMapper.expenseToExpenseResponseMapper(List.of(updatedExpense)).getFirst();
+    }
+
+    private void updateAggregateExpense(long userId, Expense existingExpense, Expense updatedExpense) {
+
+        log.info("updateAggregateExpense | Updating Aggregate Expense for user_id = {} | STARTS", userId);
+
+
+        YearMonth oldYearMonth = DateUtil.getYearMonth(existingExpense.getDate());
+        YearMonth newYearMonth = DateUtil.getYearMonth(updatedExpense.getDate());
+
+        AggregateExpense oldMonthAggregateExpense = aggregateExpenseRepository
+                .findAggregateExpenseByUserUserIdAndExpenseMonthAndExpenseYear(userId, oldYearMonth.getMonth(), oldYearMonth.getYear())
+                .orElseThrow(() -> new RuntimeException("Aggregate expense not found"));
+
+        if(oldYearMonth.equals(newYearMonth)) {
+
+            Double newAggregateExpenseAmount = oldMonthAggregateExpense.getAmount() - existingExpense.getAmount() + updatedExpense.getAmount();
+
+            oldMonthAggregateExpense.setAmount(newAggregateExpenseAmount);
+            aggregateExpenseRepository.save(oldMonthAggregateExpense);
+        }
+        else {
+
+            Double oldAggregateAmount = oldMonthAggregateExpense.getAmount() - existingExpense.getAmount();
+            oldMonthAggregateExpense.setAmount(oldAggregateAmount);
+            aggregateExpenseRepository.save(oldMonthAggregateExpense);
+
+            Long newAggregateExpenseId = 0L;
+            Double newAggregateAmount = 0.0;
+
+            Optional<AggregateExpense> optionalNewMonthAggregateExpense = aggregateExpenseRepository
+                    .findAggregateExpenseByUserUserIdAndExpenseMonthAndExpenseYear(userId, newYearMonth.getMonth(), newYearMonth.getYear());
+
+            if(optionalNewMonthAggregateExpense.isPresent()) {
+                newAggregateExpenseId = optionalNewMonthAggregateExpense.get().getId();
+                newAggregateAmount = optionalNewMonthAggregateExpense.get().getAmount();
+            }
+            newAggregateAmount += updatedExpense.getAmount();
+
+            User user = findUserByUserID(userId);
+
+            AggregateExpense newMonthAggregateExpense =
+                    new AggregateExpense(newAggregateExpenseId, user, newYearMonth.getMonth(), newYearMonth.getYear(), newAggregateAmount);
+
+            aggregateExpenseRepository.save(newMonthAggregateExpense);
+
+        }
+        log.info("updateAggregateExpense | Updating Aggregate Expense for user_id = {} | ENDS", userId);
     }
 
     @Override

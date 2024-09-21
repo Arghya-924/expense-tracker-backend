@@ -63,16 +63,15 @@ public class ExpenseController {
 
     @PutMapping("/expenses/{expenseId}")
     public ResponseEntity<ExpenseResponseDto> updateUserExpense(
-            @PathVariable long expenseId, @RequestBody ExpenseRequestDto expenseRequestDto,HttpServletRequest request) {
+            @PathVariable long expenseId, @RequestBody ExpenseRequestDto expenseRequestDto, HttpServletRequest request) {
 
         long userId = Long.parseLong(request.getAttribute(ApplicationConstants.REQUEST_USER_ID_ATTRIBUTE).toString());
 
-        try{
+        try {
             ExpenseResponseDto updatedUserExpense = expenseService.updateUserExpense(userId, expenseId, expenseRequestDto);
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedUserExpense);
-        }
-        catch (ExpenseNotFoundException exception) {
+        } catch (ExpenseNotFoundException exception) {
             log.error("ExpenseController | UpdateUserExpense | Exception Occurred | {}", exception.getLocalizedMessage());
             throw exception;
         }
@@ -83,12 +82,11 @@ public class ExpenseController {
 
         long userId = Long.parseLong(request.getAttribute(ApplicationConstants.REQUEST_USER_ID_ATTRIBUTE).toString());
 
-        try{
+        try {
             expenseService.deleteUserExpense(expenseId, userId);
 
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        catch (ExpenseNotFoundException exception) {
+        } catch (ExpenseNotFoundException exception) {
             log.error("ExpenseController | deleteUserExpense | Exception Occurred | {}", exception.getLocalizedMessage());
             throw exception;
         }

@@ -10,7 +10,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -32,17 +31,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         Optional<User> registeredUser = userRepository.findByEmail(email);
 
-        if(registeredUser.isEmpty()) {
+        if (registeredUser.isEmpty()) {
             throw new EmailNotFoundException(ApplicationConstants.EMAIL_NOT_FOUND, email);
         }
 
         String encryptedPassword = registeredUser.get().getPassword();
 
-        if(passwordEncoder.matches(authentication.getCredentials().toString(), encryptedPassword)) {
+        if (passwordEncoder.matches(authentication.getCredentials().toString(), encryptedPassword)) {
 
             return new UsernamePasswordAuthenticationToken(email, null);
-        }
-        else {
+        } else {
             throw new BadCredentialsException(ApplicationConstants.BAD_CREDENTIALS);
         }
     }

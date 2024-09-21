@@ -9,6 +9,7 @@ import com.project.expense_tracker_backend.model.Category;
 import com.project.expense_tracker_backend.model.Expense;
 import com.project.expense_tracker_backend.repository.CategoryRepository;
 import com.project.expense_tracker_backend.repository.ExpenseRepository;
+import com.project.expense_tracker_backend.util.DateUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -392,7 +393,8 @@ class ExpenseTrackerBackendApplicationTests {
 
         String responseContent = response.getResponse().getContentAsString();
 
-        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse = objectMapper.readValue(responseContent, new TypeReference<>() {});
+        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse = objectMapper.readValue(responseContent, new TypeReference<>() {
+        });
 
         List<ExpenseResponseDto> expenseResponseDtoList = userExpensesResponse.getUserExpenses();
 
@@ -401,6 +403,108 @@ class ExpenseTrackerBackendApplicationTests {
         assertEquals("Self help", expenseResponseDtoList.getLast().getCategory());
 
         assertEquals(7300.0, userExpensesResponse.getTotalMonthlyExpense());
+
+    }
+
+    @Order(14)
+    @Test
+    void testUpdateUserExpenses_AggregateAmount() throws Exception {
+
+        LoginResponseDto loginUser = loginUser("test@gmail.com", "12345");
+
+        ExpenseRequestDto mockUpdate = new ExpenseRequestDto();
+        mockUpdate.setDate(LocalDate.of(2024, 7, 15));
+        mockUpdate.setAmount(800.0);
+
+        var updateResponse = mockMvc.perform(MockMvcRequestBuilders.put("/api/expenses/{expenseId}", 7L)
+                        .header("Authorization", "Bearer " + loginUser.getAuthToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mockUpdate)))
+                .andExpect(MockMvcResultMatchers.status().isAccepted()).andReturn();
+
+        ExpenseResponseDto expenseResponseDto = objectMapper.readValue(updateResponse.getResponse().getContentAsString(), ExpenseResponseDto.class);
+
+        assertEquals(800.0, expenseResponseDto.getAmount());
+        assertEquals(LocalDate.of(2024, 7, 15), expenseResponseDto.getDate());
+
+        LocalDate previousMonthDate = LocalDate.of(2024, 7, 15);
+
+        var mockGetCurrentMonth = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
+                        .header("Authorization", "Bearer " + loginUser.getAuthToken())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+
+        String responseContent1 = mockGetCurrentMonth.getResponse().getContentAsString();
+        log.info(responseContent1);
+
+        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse1 = objectMapper.readValue(responseContent1, new TypeReference<>() {
+        });
+
+        var mockGetPreviousMonth = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
+                        .header("Authorization", "Bearer " + loginUser.getAuthToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("yearMonth", "2024-07"))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+
+        String responseContent2 = mockGetPreviousMonth.getResponse().getContentAsString();
+
+        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse2 = objectMapper.readValue(responseContent2, new TypeReference<>() {
+        });
+
+        assertEquals(5000.0, userExpensesResponse1.getTotalMonthlyExpense());
+        assertEquals(8100.0, userExpensesResponse2.getTotalMonthlyExpense());
+        assertTrue(responseContent2.contains("Movie") && responseContent2.contains("Dress") && responseContent2.contains("Book"));
+    }
+
+    @Test
+    @Order(15)
+    void testUpdateUserExpenses_AggregateAmount_Not_ExistingMonth() throws Exception {
+
+        LoginResponseDto loginUser = loginUser("test@gmail.com", "12345");
+
+        ExpenseRequestDto mockUpdate = new ExpenseRequestDto();
+        mockUpdate.setDate(LocalDate.now().plusMonths(2));
+        mockUpdate.setAmount(6000.0);
+
+        var updateResponse = mockMvc.perform(MockMvcRequestBuilders.put("/api/expenses/{expenseId}", 9L)
+                        .header("Authorization", "Bearer " + loginUser.getAuthToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mockUpdate)))
+                .andExpect(MockMvcResultMatchers.status().isAccepted()).andReturn();
+
+        ExpenseResponseDto expenseResponseDto = objectMapper.readValue(updateResponse.getResponse().getContentAsString(), ExpenseResponseDto.class);
+
+        assertEquals(6000.0, expenseResponseDto.getAmount());
+        assertEquals(LocalDate.now().plusMonths(2), expenseResponseDto.getDate());
+
+        var mockGetCurrentMonth = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
+                        .header("Authorization", "Bearer " + loginUser.getAuthToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("yearMonth", "2024-07"))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+
+        String futureYearMonth = DateUtil.getYearMonth(LocalDate.now().plusMonths(2)).toString();
+
+        var mockGetFutureMonth = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
+                        .header("Authorization", "Bearer " + loginUser.getAuthToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("yearMonth", futureYearMonth))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+
+        String responseContent1 = mockGetCurrentMonth.getResponse().getContentAsString();
+
+        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse1 = objectMapper.readValue(responseContent1, new TypeReference<>() {
+        });
+
+        String responseContent2 = mockGetFutureMonth.getResponse().getContentAsString();
+        log.info(responseContent2);
+        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse2 = objectMapper.readValue(responseContent2, new TypeReference<>() {});
+
+        assertEquals(3100.0, userExpensesResponse1.getTotalMonthlyExpense());
+        assertFalse(responseContent1.contains("Dress"));
+
+        assertEquals(6000.0, userExpensesResponse2.getTotalMonthlyExpense());
+        assertTrue(responseContent2.contains("Dress"));
 
     }
 }

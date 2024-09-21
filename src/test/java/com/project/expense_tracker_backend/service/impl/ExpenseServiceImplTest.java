@@ -53,11 +53,11 @@ class ExpenseServiceImplTest {
         long userId = 1L;
 
         List<Expense> mockUserExpenses = List.of(new Expense(1L, "Lunch", 500.0, LocalDate.now(), getCategory("Food"), getUser(userId)),
-                                        new Expense(2L, "Iphone", 90000.0, LocalDate.now(), getCategory("Shopping"), getUser(userId)));
+                new Expense(2L, "Iphone", 90000.0, LocalDate.now(), getCategory("Shopping"), getUser(userId)));
 
         List<ExpenseResponseDto> mockResponseDto = List.of(
-                new ExpenseResponseDto(1L,"Lunch", 500.0, LocalDate.now(), "Food"),
-                new ExpenseResponseDto(1L,"Iphone", 90000.0, LocalDate.now(), "Shopping")
+                new ExpenseResponseDto(1L, "Lunch", 500.0, LocalDate.now(), "Food"),
+                new ExpenseResponseDto(1L, "Iphone", 90000.0, LocalDate.now(), "Shopping")
         );
 
         LocalDate[] firstAndLastDate = DateUtil.getFirstAndLastDateOfMonth(null);
@@ -101,6 +101,6 @@ class ExpenseServiceImplTest {
     }
 
     private User getUser(long userId) {
-        return new User(userId, "Arghya", "test@gmail.com", "encrypted","1234567890");
+        return new User(userId, "Arghya", "test@gmail.com", "encrypted", "1234567890");
     }
 }

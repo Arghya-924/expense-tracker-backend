@@ -33,6 +33,7 @@ public class CustomAuthenticationProviderTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
+
     @Test
     void testSuccessfulAuthentication() {
 
@@ -91,6 +92,6 @@ public class CustomAuthenticationProviderTest {
     }
 
     private Optional<User> getUser() {
-        return Optional.of(new User(1L, "test", "test@test.com", "encrypted","1234567890"));
+        return Optional.of(new User(1L, "test", "test@test.com", "encrypted", "1234567890"));
     }
 }

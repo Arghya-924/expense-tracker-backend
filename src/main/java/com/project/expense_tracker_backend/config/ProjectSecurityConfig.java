@@ -26,10 +26,10 @@ public class ProjectSecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers("/public/**", "/h2-console/**").permitAll()
-                        .requestMatchers("/api/**").authenticated());
+                                .requestMatchers("/api/**").authenticated());
 
         httpSecurity.addFilterBefore(jwtValidatorFilter, UsernamePasswordAuthenticationFilter.class)
-                        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         httpSecurity.headers(headers ->
                 headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));

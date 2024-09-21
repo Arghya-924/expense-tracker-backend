@@ -5,13 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.Month;
-import java.time.Year;
 import java.util.Optional;
 
 @Repository
 public interface AggregateExpenseRepository extends JpaRepository<AggregateExpense, Long> {
 
-    Optional<AggregateExpense> findAggregateExpenseByUserUserIdAndExpenseMonth(long userId, Month expenseMonth);
+//    Optional<AggregateExpense> findAggregateExpenseByUserUserIdAndExpenseMonth(long userId, Month expenseMonth);
 
     Optional<AggregateExpense> findAggregateExpenseByUserUserIdAndExpenseMonthAndExpenseYear(long userId, Month expenseMonth, int expenseYear);
 }
