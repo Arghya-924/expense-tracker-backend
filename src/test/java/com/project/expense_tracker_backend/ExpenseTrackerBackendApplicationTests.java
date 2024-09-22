@@ -200,7 +200,7 @@ class ExpenseTrackerBackendApplicationTests {
 
         long userId = 2L;
 
-        LoginResponseDto mockLogin = loginUser("test2@gmail.com", "12345");
+        LoginResponseDto mockLogin = loginUser("test2@gmail.com", "123456");
 
 
         List<ExpenseRequestDto> userExpenses = List.of(
@@ -261,7 +261,7 @@ class ExpenseTrackerBackendApplicationTests {
     @Order(10)
     void testUpdateExpense_AmountAndDescription() throws Exception {
 
-        LoginResponseDto mockLogin = loginUser("test2@gmail.com", "12345");
+        LoginResponseDto mockLogin = loginUser("test2@gmail.com", "123456");
 
         var userExpenses = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
                         .header("Authorization", "Bearer " + mockLogin.getAuthToken())
@@ -296,7 +296,7 @@ class ExpenseTrackerBackendApplicationTests {
     @Order(11)
     void testDeleteUserExpense_Successful() throws Exception {
 
-        LoginResponseDto mockLogin = loginUser("test2@gmail.com", "12345");
+        LoginResponseDto mockLogin = loginUser("test2@gmail.com", "123456");
 
         Optional<Expense> expense = expenseRepository.findById(2L);
 

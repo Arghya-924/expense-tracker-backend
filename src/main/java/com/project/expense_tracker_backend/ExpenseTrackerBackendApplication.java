@@ -43,7 +43,7 @@ public class ExpenseTrackerBackendApplication {
         category2 = categoryRepository.save(category2);
 
         User user1 = new User(0L, "Arghya", "test1@gmail.com", "12345", "1234456667");
-        User user2 = new User(0L, "Ashmita", "test2@gmail.com", "12345", "1234567890");
+        User user2 = new User(0L, "Ashmita", "test2@gmail.com", "123456", "1234567890");
 
         user1 = userRepository.save(user1);
         user2 = userRepository.save(user2);
