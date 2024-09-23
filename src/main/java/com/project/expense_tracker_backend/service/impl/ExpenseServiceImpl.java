@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.YearMonth;
 import java.util.*;
 
@@ -177,14 +178,13 @@ public class ExpenseServiceImpl implements IExpenseService {
                 .findAggregateExpenseByUserUserIdAndExpenseMonthAndExpenseYear(userId, oldYearMonth.getMonth(), oldYearMonth.getYear())
                 .orElseThrow(() -> new RuntimeException("Aggregate expense not found"));
 
-        if(oldYearMonth.equals(newYearMonth)) {
+        if (oldYearMonth.equals(newYearMonth)) {
 
             Double newAggregateExpenseAmount = oldMonthAggregateExpense.getAmount() - existingExpense.getAmount() + updatedExpense.getAmount();
 
             oldMonthAggregateExpense.setAmount(newAggregateExpenseAmount);
             aggregateExpenseRepository.save(oldMonthAggregateExpense);
-        }
-        else {
+        } else {
 
             Double oldAggregateAmount = oldMonthAggregateExpense.getAmount() - existingExpense.getAmount();
             oldMonthAggregateExpense.setAmount(oldAggregateAmount);
@@ -196,7 +196,7 @@ public class ExpenseServiceImpl implements IExpenseService {
             Optional<AggregateExpense> optionalNewMonthAggregateExpense = aggregateExpenseRepository
                     .findAggregateExpenseByUserUserIdAndExpenseMonthAndExpenseYear(userId, newYearMonth.getMonth(), newYearMonth.getYear());
 
-            if(optionalNewMonthAggregateExpense.isPresent()) {
+            if (optionalNewMonthAggregateExpense.isPresent()) {
                 newAggregateExpenseId = optionalNewMonthAggregateExpense.get().getId();
                 newAggregateAmount = optionalNewMonthAggregateExpense.get().getAmount();
             }
@@ -219,7 +219,23 @@ public class ExpenseServiceImpl implements IExpenseService {
         Expense existingExpense = expenseRepository.findByExpenseIdAndUserUserId(expenseId, userId)
                 .orElseThrow(() -> new ExpenseNotFoundException(expenseId, userId));
 
+        // update the aggregate expense before deleting the expense
+        updateAggregateExpenseForDeleteExpense(userId, existingExpense);
+
         expenseRepository.delete(existingExpense);
+    }
+
+    private void updateAggregateExpenseForDeleteExpense(long userId, Expense existingExpense) {
+
+        Month expenseMonth = existingExpense.getDate().getMonth();
+        int expenseYear = existingExpense.getDate().getYear();
+
+        AggregateExpense aggregateExpense = aggregateExpenseRepository
+                .findAggregateExpenseByUserUserIdAndExpenseMonthAndExpenseYear(userId, expenseMonth, expenseYear)
+                .orElseThrow(() -> new RuntimeException("Aggregate expense not found"));
+
+        aggregateExpense.setAmount(aggregateExpense.getAmount() - existingExpense.getAmount());
+        aggregateExpenseRepository.save(aggregateExpense);
     }
 
     @Override

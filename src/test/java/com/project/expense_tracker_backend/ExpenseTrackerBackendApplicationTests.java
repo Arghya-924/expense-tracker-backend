@@ -32,6 +32,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -498,7 +499,8 @@ class ExpenseTrackerBackendApplicationTests {
 
         String responseContent2 = mockGetFutureMonth.getResponse().getContentAsString();
         log.info(responseContent2);
-        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse2 = objectMapper.readValue(responseContent2, new TypeReference<>() {});
+        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse2 = objectMapper.readValue(responseContent2, new TypeReference<>() {
+        });
 
         assertEquals(3100.0, userExpensesResponse1.getTotalMonthlyExpense());
         assertFalse(responseContent1.contains("Dress"));
@@ -506,5 +508,53 @@ class ExpenseTrackerBackendApplicationTests {
         assertEquals(6000.0, userExpensesResponse2.getTotalMonthlyExpense());
         assertTrue(responseContent2.contains("Dress"));
 
+    }
+
+    @Test
+    @Order(16)
+    void testDeleteExpense_Aggregate_Expense() throws Exception {
+
+        UserRegistrationDto newUserDetails = new UserRegistrationDto(
+                "test3", "test3@test.com", "1234567", "0987654321");
+
+        // register new user
+        mockMvc.perform(MockMvcRequestBuilders.post(ApplicationConstants.REGISTER_USER_API_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newUserDetails)))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        // add new expenses for this user.
+        var loginResponse = loginUser("test3@test.com", "1234567");
+
+        List<ExpenseRequestDto> newExpenses = List.of(
+                new ExpenseRequestDto("LOL", 1000.0, LocalDate.of(2024, Month.SEPTEMBER, 20), "LOL2"),
+                new ExpenseRequestDto("NEW_LOL", 2000.0, LocalDate.of(2024, Month.SEPTEMBER, 18), "Shopping")
+        );
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/expenses")
+                        .header("Authorization", "Bearer " + loginResponse.getAuthToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newExpenses)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value("11"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value("12"));
+
+        // delete user expense with expense id = 11
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/expenses/{expenseId}", 11L)
+                        .header("Authorization", "Bearer " + loginResponse.getAuthToken()))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        // fetch all the expenses for the month and check the aggregate amount is updated or not
+        var getApiResponse = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
+                        .header("Authorization", "Bearer " + loginResponse.getAuthToken())
+                        .param("yearMonth", "2024-09"))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+
+        String responseContent = getApiResponse.getResponse().getContentAsString();
+
+        UserExpensesResponse<List<ExpenseResponseDto>> userExpensesResponse = objectMapper.readValue(responseContent, new TypeReference<>() {
+        });
+
+        assertEquals(2000, userExpensesResponse.getTotalMonthlyExpense());
     }
 }
