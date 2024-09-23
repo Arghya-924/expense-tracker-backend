@@ -35,7 +35,9 @@ public class ExpenseController {
 
             List<ExpenseResponseDto> userExpenses = expenseService.getUserExpenses(yearMonth, userId);
 
-            return new ResponseEntity<>(new UserExpensesResponse<>(userExpenses), HttpStatus.OK);
+            Double totalMonthlyExpense = expenseService.getTotalMonthlyUserExpense(yearMonth, userId);
+
+            return new ResponseEntity<>(new UserExpensesResponse<>(userExpenses, totalMonthlyExpense), HttpStatus.OK);
 
         } catch (DateTimeParseException dateTimeParseException) {
             log.error("ExpenseController | getUserExpenses | Exception : {}", dateTimeParseException.getLocalizedMessage());
@@ -54,23 +56,22 @@ public class ExpenseController {
             return ResponseEntity.status(HttpStatus.CREATED).body(savedUserExpenses);
         } catch (UserNotFoundException userNotFoundException) {
 
-            log.error("saveUserExpensesController | Exception occured: {}", userNotFoundException.getLocalizedMessage());
+            log.error("saveUserExpensesController | Exception occurred: {}", userNotFoundException.getLocalizedMessage());
             throw userNotFoundException;
         }
     }
 
     @PutMapping("/expenses/{expenseId}")
     public ResponseEntity<ExpenseResponseDto> updateUserExpense(
-            @PathVariable long expenseId, @RequestBody ExpenseRequestDto expenseRequestDto,HttpServletRequest request) {
+            @PathVariable long expenseId, @RequestBody ExpenseRequestDto expenseRequestDto, HttpServletRequest request) {
 
         long userId = Long.parseLong(request.getAttribute(ApplicationConstants.REQUEST_USER_ID_ATTRIBUTE).toString());
 
-        try{
+        try {
             ExpenseResponseDto updatedUserExpense = expenseService.updateUserExpense(userId, expenseId, expenseRequestDto);
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedUserExpense);
-        }
-        catch (ExpenseNotFoundException exception) {
+        } catch (ExpenseNotFoundException exception) {
             log.error("ExpenseController | UpdateUserExpense | Exception Occurred | {}", exception.getLocalizedMessage());
             throw exception;
         }
@@ -81,12 +82,11 @@ public class ExpenseController {
 
         long userId = Long.parseLong(request.getAttribute(ApplicationConstants.REQUEST_USER_ID_ATTRIBUTE).toString());
 
-        try{
+        try {
             expenseService.deleteUserExpense(expenseId, userId);
 
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        catch (ExpenseNotFoundException exception) {
+        } catch (ExpenseNotFoundException exception) {
             log.error("ExpenseController | deleteUserExpense | Exception Occurred | {}", exception.getLocalizedMessage());
             throw exception;
         }

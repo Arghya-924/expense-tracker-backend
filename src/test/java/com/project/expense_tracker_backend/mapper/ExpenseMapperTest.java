@@ -5,11 +5,7 @@ import com.project.expense_tracker_backend.dto.ExpenseResponseDto;
 import com.project.expense_tracker_backend.model.Category;
 import com.project.expense_tracker_backend.model.Expense;
 import com.project.expense_tracker_backend.model.User;
-import com.project.expense_tracker_backend.repository.UserRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -58,6 +54,6 @@ public class ExpenseMapperTest {
     }
 
     private User getUser(long userId) {
-        return new User(userId, "Arghya", "test@gmail.com", "encrypted","1234567890");
+        return new User(userId, "Arghya", "test@gmail.com", "encrypted", "1234567890");
     }
 }

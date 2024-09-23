@@ -1,8 +1,8 @@
 package com.project.expense_tracker_backend.controller;
 
 import com.project.expense_tracker_backend.dto.ExpenseRequestDto;
-import com.project.expense_tracker_backend.dto.UserExpensesResponse;
 import com.project.expense_tracker_backend.dto.ExpenseResponseDto;
+import com.project.expense_tracker_backend.dto.UserExpensesResponse;
 import com.project.expense_tracker_backend.service.IExpenseService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,8 +42,8 @@ class ExpenseControllerTest {
     void testGetUserExpenses() {
         long userId = 1L;
         List<ExpenseResponseDto> mockExpenses = Arrays.asList(
-                new ExpenseResponseDto(1L,"Lunch", 20.0, LocalDate.now(), "Food"),
-                new ExpenseResponseDto(2L,"Groceries", 50.0, LocalDate.now(), "Shopping")
+                new ExpenseResponseDto(1L, "Lunch", 20.0, LocalDate.now(), "Food"),
+                new ExpenseResponseDto(2L, "Groceries", 50.0, LocalDate.now(), "Shopping")
         );
 
         when(httpServletRequest.getAttribute("userId")).thenReturn(String.valueOf(userId));
@@ -67,8 +67,8 @@ class ExpenseControllerTest {
         );
 
         List<ExpenseResponseDto> savedExpenses = List.of(
-                new ExpenseResponseDto(1L,"Iphone 16 Pro Max", 150000.0, LocalDate.now(), "Shopping"),
-                new ExpenseResponseDto(2L,"Saree", 2000.0, LocalDate.now(), "Shopping")
+                new ExpenseResponseDto(1L, "Iphone 16 Pro Max", 150000.0, LocalDate.now(), "Shopping"),
+                new ExpenseResponseDto(2L, "Saree", 2000.0, LocalDate.now(), "Shopping")
         );
 
         when(httpServletRequest.getAttribute("userId")).thenReturn(String.valueOf(userId));

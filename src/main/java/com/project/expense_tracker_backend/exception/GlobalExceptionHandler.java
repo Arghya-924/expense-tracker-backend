@@ -26,19 +26,35 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     })
     public ResponseEntity<Object> handleEmailNotFoundOrBadCredentialsException(Exception ex, WebRequest request) throws Exception {
 
-        if (ex instanceof EmailNotFoundException emailNotFoundException) {
-            return handleEmailNotFoundException(emailNotFoundException, request);
-        } else if (ex instanceof BadCredentialsException badCredentialsException) {
-            return handleBadCredentialException(badCredentialsException, request);
-        } else if (ex instanceof UserNotFoundException userNotFoundException) {
-            return handleUserNotFoundException(userNotFoundException, request);
-        } else if (ex instanceof DataIntegrityViolationException dataIntegrityViolationException) {
-            return handleDataIntegrityViolationException(dataIntegrityViolationException, request);
-        } else if (ex instanceof YearMonthParseException yearMonthParseException) {
-            return handleYearMonthParseException(yearMonthParseException, request);
-        } else if (ex instanceof ExpenseNotFoundException expenseNotFoundException) {
-            return handleExpenseNotFoundException(expenseNotFoundException, request);
-        } else throw ex;
+        return switch (ex) {
+            case EmailNotFoundException emailNotFoundException ->
+                    handleEmailNotFoundException(emailNotFoundException, request);
+            case BadCredentialsException badCredentialsException ->
+                    handleBadCredentialException(badCredentialsException, request);
+            case UserNotFoundException userNotFoundException ->
+                    handleUserNotFoundException(userNotFoundException, request);
+            case DataIntegrityViolationException dataIntegrityViolationException ->
+                    handleDataIntegrityViolationException(dataIntegrityViolationException, request);
+            case YearMonthParseException yearMonthParseException ->
+                    handleYearMonthParseException(yearMonthParseException, request);
+            case ExpenseNotFoundException expenseNotFoundException ->
+                    handleExpenseNotFoundException(expenseNotFoundException, request);
+            case null, default -> throw ex;
+        };
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, WebRequest request) {
+        ex.printStackTrace();
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                ApplicationConstants.STATUS_FAILURE,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                request.getDescription(false),
+                List.of(ex.getLocalizedMessage())
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
+
     }
 
     private ResponseEntity<Object> handleExpenseNotFoundException(ExpenseNotFoundException expenseNotFoundException, WebRequest request) {

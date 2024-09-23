@@ -6,18 +6,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Month;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"categoryName"}))
-public class Category {
+public class AggregateExpense {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
+    private Long id;
 
-    @JoinColumn(unique = true)
-    private String categoryName;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "userId")
+    private User user;
+
+    private Month expenseMonth;
+    private int expenseYear;
+
+    private Double amount;
 }

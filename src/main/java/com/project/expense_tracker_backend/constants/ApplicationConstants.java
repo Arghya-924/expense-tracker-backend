@@ -2,8 +2,6 @@ package com.project.expense_tracker_backend.constants;
 
 public class ApplicationConstants {
 
-    private ApplicationConstants() {}
-
     public static final String USER_DOES_NOT_EXIST = "User with userId %s does not exists";
     public static final String REQUEST_USER_ID_ATTRIBUTE = "userId";
     public static final String EMAIL_NOT_FOUND = "User with email %s does not exists";
@@ -19,6 +17,9 @@ public class ApplicationConstants {
     public static final String YEAR_MONTH_NOT_VALID = "%s is not a valid year-month. Required Format : yyyy-mm";
     public static final String EXPENSE_NOT_FOUND = "Expense with expense id : %s, does not exists";
     public static final String EXPENSE_USER_NOT_MATCH = "Expense with expense id : %s, does not belong to user with user id : %s";
+    public static final String USER_DETAILS_CACHE_NAME = "user_details";
+    private ApplicationConstants() {
+    }
 
 
 }

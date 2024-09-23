@@ -12,7 +12,8 @@ import java.time.LocalDate;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 public class Expense {
 
     @Id
@@ -32,4 +33,13 @@ public class Expense {
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     private User user;
 
+    public Expense(Expense existingExpense) {
+
+        this.expenseId = existingExpense.getExpenseId();
+        this.description = existingExpense.getDescription();
+        this.amount = existingExpense.getAmount();
+        this.date = existingExpense.getDate();
+        this.category = existingExpense.getCategory();
+        this.user = existingExpense.getUser();
+    }
 }

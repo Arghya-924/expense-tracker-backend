@@ -14,4 +14,6 @@ public interface IExpenseService {
     ExpenseResponseDto updateUserExpense(long userId, long expenseId, ExpenseRequestDto expenseRequestDto);
 
     void deleteUserExpense(long expenseId, long userId);
+
+    Double getTotalMonthlyUserExpense(String yearMonth, long userId);
 }

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,7 +23,7 @@ public class LoginServiceImplTest {
     private JwtGenerator jwtGenerator;
 
     @Mock
-    private AuthenticationProvider authenticationProvider;
+    private AuthenticationManager authenticationManager;
 
     @InjectMocks
     private LoginServiceImpl loginService;
@@ -43,7 +43,7 @@ public class LoginServiceImplTest {
         Authentication returnAuth =
                 new UsernamePasswordAuthenticationToken(mockRequestDto.getEmail(), null);
 
-        when(authenticationProvider.authenticate(mockAuth))
+        when(authenticationManager.authenticate(mockAuth))
                 .thenReturn(returnAuth);
 
         when(jwtGenerator.generateToken(returnAuth)).thenReturn("JWT_TOKEN_GENERATED");
@@ -61,7 +61,7 @@ public class LoginServiceImplTest {
         Authentication mockAuth =
                 new UsernamePasswordAuthenticationToken(mockRequestDto.getEmail(), mockRequestDto.getPassword());
 
-        when(authenticationProvider.authenticate(mockAuth))
+        when(authenticationManager.authenticate(mockAuth))
                 .thenThrow(EmailNotFoundException.class);
 
         assertThrows(EmailNotFoundException.class, () ->
@@ -75,7 +75,7 @@ public class LoginServiceImplTest {
         Authentication mockAuth =
                 new UsernamePasswordAuthenticationToken(mockRequestDto.getEmail(), mockRequestDto.getPassword());
 
-        when(authenticationProvider.authenticate(mockAuth))
+        when(authenticationManager.authenticate(mockAuth))
                 .thenThrow(BadCredentialsException.class);
 
         assertThrows(BadCredentialsException.class, () ->

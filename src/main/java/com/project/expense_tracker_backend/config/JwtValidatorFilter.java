@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,7 +49,7 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
 
         String token = request.getHeader(ApplicationConstants.JWT_AUTH_HEADER);
 
-        if(token != null && token.startsWith("Bearer") && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (token != null && token.startsWith("Bearer") && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             token = token.substring(7);
 
@@ -58,13 +57,12 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
 
             Claims claims;
 
-            try{
+            try {
                 claims = Jwts.parser().verifyWith(key)
                         .build()
                         .parseSignedClaims(token)
                         .getPayload();
-            }
-            catch(ExpiredJwtException expiredJwtException) {
+            } catch (ExpiredJwtException expiredJwtException) {
                 log.error("Invalid Token received | {}", expiredJwtException.getLocalizedMessage());
 
                 ErrorResponseDto errorResponseDto = new ErrorResponseDto(
@@ -80,8 +78,7 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
                 response.getWriter().write(objectMapper.writeValueAsString(errorResponseDto));
 
                 return;
-            }
-            catch (JwtException exception) {
+            } catch (JwtException exception) {
 
                 log.error("Invalid Token received | {}", exception.getLocalizedMessage());
 
@@ -111,14 +108,14 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             request.setAttribute(ApplicationConstants.REQUEST_USER_ID_ATTRIBUTE, userId);
         }
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 
     private long extractUserIdFromEmail(String email) {
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
-        if(optionalUser.isEmpty()) throw new EmailNotFoundException(ApplicationConstants.EMAIL_NOT_FOUND, email);
+        if (optionalUser.isEmpty()) throw new EmailNotFoundException(ApplicationConstants.EMAIL_NOT_FOUND, email);
 
         return optionalUser.get().getUserId();
     }
