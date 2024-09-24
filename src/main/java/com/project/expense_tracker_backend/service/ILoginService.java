@@ -9,4 +9,6 @@ public interface ILoginService {
     LoginResponseDto loginUserAndGenerateToken(LoginRequestDto loginRequestDto);
 
     void registerNewUser(UserRegistrationDto userDetails);
+
+    void changeUserPassword(String newPassword, long userId);
 }

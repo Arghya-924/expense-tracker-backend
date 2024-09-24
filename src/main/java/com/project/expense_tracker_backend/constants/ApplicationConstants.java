@@ -17,7 +17,9 @@ public class ApplicationConstants {
     public static final String YEAR_MONTH_NOT_VALID = "%s is not a valid year-month. Required Format : yyyy-mm";
     public static final String EXPENSE_NOT_FOUND = "Expense with expense id : %s, does not exists";
     public static final String EXPENSE_USER_NOT_MATCH = "Expense with expense id : %s, does not belong to user with user id : %s";
-    public static final String USER_DETAILS_CACHE_NAME = "user_details";
+    public static final String USER_DETAILS_CACHE_NAME_BY_EMAIL = "user_details_email";
+    public static final String USER_DETAILS_CACHE_NAME_BY_ID = "user_details_id";
+    public static final String PASSWORD_CHANGED = "Password changed successfully";
     private ApplicationConstants() {
     }
 

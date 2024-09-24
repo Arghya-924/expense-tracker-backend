@@ -15,6 +15,7 @@ import com.project.expense_tracker_backend.repository.CategoryRepository;
 import com.project.expense_tracker_backend.repository.ExpenseRepository;
 import com.project.expense_tracker_backend.repository.UserRepository;
 import com.project.expense_tracker_backend.service.IExpenseService;
+import com.project.expense_tracker_backend.service.UserDetailsService;
 import com.project.expense_tracker_backend.util.BeanUtil;
 import com.project.expense_tracker_backend.util.DateUtil;
 import com.project.expense_tracker_backend.util.ExpensesUtil;
@@ -32,9 +33,9 @@ import java.util.*;
 @Slf4j
 public class ExpenseServiceImpl implements IExpenseService {
 
+    private final UserDetailsService userDetailsService;
     private ExpenseRepository expenseRepository;
     private CategoryRepository categoryRepository;
-    private UserRepository userRepository;
     private ExpenseMapper expenseMapper;
     private AggregateExpenseRepository aggregateExpenseRepository;
 
@@ -115,12 +116,7 @@ public class ExpenseServiceImpl implements IExpenseService {
     }
 
     private User findUserByUserID(long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-
-        if (optionalUser.isEmpty()) {
-            throw new UserNotFoundException(ApplicationConstants.USER_DOES_NOT_EXIST, userId);
-        }
-        return optionalUser.get();
+        return userDetailsService.loadUserById(userId);
     }
 
     private Category findOrCreateCategory(String categoryName) {

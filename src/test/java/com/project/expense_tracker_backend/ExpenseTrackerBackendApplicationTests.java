@@ -557,4 +557,29 @@ class ExpenseTrackerBackendApplicationTests {
 
         assertEquals(2000, userExpensesResponse.getTotalMonthlyExpense());
     }
+
+    @Test
+    @Order(17)
+    void testChangePassword() throws Exception {
+
+        var loginResponse = loginUser("test1@gmail.com", "12345");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/changePass")
+                .header("Authorization", "Bearer " + loginResponse.getAuthToken())
+                .contentType(MediaType.TEXT_PLAIN)
+                .content("newPassword"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // try login in with old password
+        LoginRequestDto loginRequestDto = new LoginRequestDto("test1@gmail.com", "12345");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/pubic/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequestDto)))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+
+        // try login with new password
+        loginUser("test1@gmail.com", "newPassword");
+
+    }
 }
