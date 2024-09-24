@@ -44,7 +44,7 @@ public class LoginServiceImpl implements ILoginService {
                 new UsernamePasswordAuthenticationToken(email, password)
         );
 
-        String token = jwtGenerator.generateToken(authentication);
+        String token = jwtGenerator.generateToken(authentication).token();
 
         return new LoginResponseDto(ApplicationConstants.STATUS_SUCCESS, token);
     }

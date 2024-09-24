@@ -71,7 +71,7 @@ class ExpenseTrackerBackendApplicationTests {
         Authentication mockAuthentication =
                 new UsernamePasswordAuthenticationToken("abcd", null);
 
-        String token = jwtGenerator.generateToken(mockAuthentication);
+        String token = jwtGenerator.generateToken(mockAuthentication).token();
 
         Assertions.assertFalse(token.isEmpty());
 

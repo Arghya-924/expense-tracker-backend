@@ -19,6 +19,7 @@ public class ApplicationConstants {
     public static final String EXPENSE_USER_NOT_MATCH = "Expense with expense id : %s, does not belong to user with user id : %s";
     public static final String USER_DETAILS_CACHE_NAME_BY_EMAIL = "user_details_email";
     public static final String USER_DETAILS_CACHE_NAME_BY_ID = "user_details_id";
+    public static final String JWT_CACHE_NAME = "jwt_cache";
     public static final String PASSWORD_CHANGED = "Password changed successfully";
     private ApplicationConstants() {
     }

@@ -14,6 +14,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import java.util.Date;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +48,7 @@ public class LoginServiceImplTest {
         when(authenticationManager.authenticate(mockAuth))
                 .thenReturn(returnAuth);
 
-        when(jwtGenerator.generateToken(returnAuth)).thenReturn("JWT_TOKEN_GENERATED");
+        when(jwtGenerator.generateToken(returnAuth)).thenReturn(new JwtGenerator.TokenPair("JWT_TOKEN_GENERATED", new Date()));
 
         LoginResponseDto response = loginService.loginUserAndGenerateToken(mockRequestDto);
 
