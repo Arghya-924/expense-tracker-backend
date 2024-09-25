@@ -8,6 +8,7 @@ import com.project.expense_tracker_backend.model.User;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,6 +55,6 @@ public class ExpenseMapperTest {
     }
 
     private User getUser(long userId) {
-        return new User(userId, "Arghya", "test@gmail.com", "encrypted", "1234567890");
+        return new User(userId, "Arghya", "test@gmail.com", "encrypted", "1234567890", LocalDateTime.now(), LocalDateTime.now());
     }
 }

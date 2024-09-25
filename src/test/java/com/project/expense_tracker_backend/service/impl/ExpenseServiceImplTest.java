@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,6 +105,6 @@ class ExpenseServiceImplTest {
     }
 
     private User getUser(long userId) {
-        return new User(userId, "Arghya", "test@gmail.com", "encrypted", "1234567890");
+        return new User(userId, "Arghya", "test@gmail.com", "encrypted", "1234567890", LocalDateTime.now(), LocalDateTime.now());
     }
 }

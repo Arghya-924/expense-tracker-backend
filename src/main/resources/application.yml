@@ -24,6 +24,7 @@ logging:
       springframework:
         cache: TRACE
 
+
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION_SECONDS}

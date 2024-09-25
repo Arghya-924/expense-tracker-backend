@@ -7,6 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "USER_DETAILS", uniqueConstraints = @UniqueConstraint(columnNames = {"email"}))
@@ -28,6 +32,13 @@ public class User {
     private String password;
 
     private String mobileNumber;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime registrationDate;
+
+    @UpdateTimestamp
+    private LocalDateTime lastModified;
 
     public User(UserRegistrationDto userDetails) {
 

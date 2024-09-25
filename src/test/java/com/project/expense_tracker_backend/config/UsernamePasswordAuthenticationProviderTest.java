@@ -16,6 +16,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +46,7 @@ public class UsernamePasswordAuthenticationProviderTest {
         Authentication mockAuthentication =
                 new UsernamePasswordAuthenticationToken("test@test.com", "encrypted");
 
-        User mockUser = new User(0L, "test", "test@test.com", "encrypted", "mobileNumber");
+    User mockUser = new User(0L, "test", "test@test.com", "encrypted", "mobileNumber", LocalDateTime.now(), LocalDateTime.now());
 
         ConcurrentMapCache cache = new ConcurrentMapCache(ApplicationConstants.USER_DETAILS_CACHE_NAME_BY_EMAIL);
         cache.putIfAbsent("test@test.com", mockUser);
@@ -80,7 +82,7 @@ public class UsernamePasswordAuthenticationProviderTest {
         Authentication mockAuthentication =
                 new UsernamePasswordAuthenticationToken("test@test.com", "wrongPassword");
 
-        User mockUser = new User(0L, "test", "test@test.com", "wrongPassword", "mobileNumber");
+        User mockUser = new User(0L, "test", "test@test.com", "wrongPassword", "mobileNumber", LocalDateTime.now(), LocalDateTime.now());
 
         ConcurrentMapCache cache = new ConcurrentMapCache(ApplicationConstants.USER_DETAILS_CACHE_NAME_BY_EMAIL);
         cache.putIfAbsent("test@test.com", mockUser);
