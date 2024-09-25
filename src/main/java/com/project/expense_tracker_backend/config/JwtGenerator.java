@@ -40,7 +40,7 @@ public class JwtGenerator {
                 .subject(ApplicationConstants.JWT_SUBJECT)
                 .claims(claims)
                 .expiration(expirationDate)
-                .signWith(secretKey)
+                .encryptWith(secretKey, Jwts.ENC.A128CBC_HS256)
                 .compact();
 
         return new TokenPair(token, expirationDate);

@@ -77,8 +77,8 @@ class ExpenseTrackerBackendApplicationTests {
 
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(JWT_SECRET));
 
-        Claims claims = Jwts.parser().verifyWith(key)
-                .build().parseSignedClaims(token).getPayload();
+        Claims claims = Jwts.parser().decryptWith(key)
+                .build().parseEncryptedClaims(token).getPayload();
 
         Date expireDate = claims.getExpiration();
 
