@@ -11,6 +11,7 @@ import com.project.expense_tracker_backend.model.User;
 import com.project.expense_tracker_backend.repository.CategoryRepository;
 import com.project.expense_tracker_backend.repository.ExpenseRepository;
 import com.project.expense_tracker_backend.repository.UserRepository;
+import com.project.expense_tracker_backend.service.UserDetailsService;
 import com.project.expense_tracker_backend.util.DateUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +34,9 @@ class ExpenseServiceImplTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private UserDetailsService userDetailsService;
 
     @Mock
     private ExpenseMapper expenseMapper;
@@ -83,13 +88,12 @@ class ExpenseServiceImplTest {
         List<Expense> mockUserExpenses = List.of(new Expense(1L, "Lunch", 500.0, LocalDate.now(), getCategory("Food"), getUser(userId)),
                 new Expense(2L, "Iphone", 90000.0, LocalDate.now(), getCategory("Shopping"), getUser(userId)));
 
-        Optional<User> nullUser = Optional.empty();
         List<ExpenseRequestDto> mockRequestDto = List.of(
                 new ExpenseRequestDto("Lunch", 500.0, LocalDate.now(), "Food"),
                 new ExpenseRequestDto("Iphone", 90000.0, LocalDate.now(), "Shopping")
         );
 
-        when(userRepository.findById(userId)).thenReturn(nullUser);
+        when(userDetailsService.loadUserById(userId)).thenThrow(UserNotFoundException.class);
 
         assertThrows(UserNotFoundException.class, () -> expenseService.saveUserExpenses(userId, mockRequestDto));
 
@@ -101,6 +105,6 @@ class ExpenseServiceImplTest {
     }
 
     private User getUser(long userId) {
-        return new User(userId, "Arghya", "test@gmail.com", "encrypted", "1234567890");
+        return new User(userId, "Arghya", "test@gmail.com", "encrypted", "1234567890", LocalDateTime.now(), LocalDateTime.now());
     }
 }

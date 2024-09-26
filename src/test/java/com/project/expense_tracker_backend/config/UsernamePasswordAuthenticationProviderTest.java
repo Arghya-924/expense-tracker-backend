@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,7 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -47,12 +46,12 @@ public class UsernamePasswordAuthenticationProviderTest {
         Authentication mockAuthentication =
                 new UsernamePasswordAuthenticationToken("test@test.com", "encrypted");
 
-        User mockUser = new User(0L, "test", "test@test.com", "encrypted", "mobileNumber");
+    User mockUser = new User(0L, "test", "test@test.com", "encrypted", "mobileNumber", LocalDateTime.now(), LocalDateTime.now());
 
-        ConcurrentMapCache cache = new ConcurrentMapCache(ApplicationConstants.USER_DETAILS_CACHE_NAME);
+        ConcurrentMapCache cache = new ConcurrentMapCache(ApplicationConstants.USER_DETAILS_CACHE_NAME_BY_EMAIL);
         cache.putIfAbsent("test@test.com", mockUser);
 
-        when(cacheManager.getCache(ApplicationConstants.USER_DETAILS_CACHE_NAME)).thenReturn(cache);
+        when(cacheManager.getCache(ApplicationConstants.USER_DETAILS_CACHE_NAME_BY_EMAIL)).thenReturn(cache);
         when(passwordEncoder.matches("encrypted", "encrypted")).thenReturn(true);
 
         Authentication authentication = authenticationProvider.authenticate(mockAuthentication);
@@ -83,12 +82,12 @@ public class UsernamePasswordAuthenticationProviderTest {
         Authentication mockAuthentication =
                 new UsernamePasswordAuthenticationToken("test@test.com", "wrongPassword");
 
-        User mockUser = new User(0L, "test", "test@test.com", "wrongPassword", "mobileNumber");
+        User mockUser = new User(0L, "test", "test@test.com", "wrongPassword", "mobileNumber", LocalDateTime.now(), LocalDateTime.now());
 
-        ConcurrentMapCache cache = new ConcurrentMapCache(ApplicationConstants.USER_DETAILS_CACHE_NAME);
+        ConcurrentMapCache cache = new ConcurrentMapCache(ApplicationConstants.USER_DETAILS_CACHE_NAME_BY_EMAIL);
         cache.putIfAbsent("test@test.com", mockUser);
 
-        when(cacheManager.getCache(ApplicationConstants.USER_DETAILS_CACHE_NAME)).thenReturn(cache);
+        when(cacheManager.getCache(ApplicationConstants.USER_DETAILS_CACHE_NAME_BY_EMAIL)).thenReturn(cache);
         when(userDetailsService.loadUserByUsername("test@test.com")).thenReturn(mockUser);
         when(passwordEncoder.matches(mockAuthentication.getCredentials().toString(), mockUser.getPassword()))
                 .thenReturn(false);

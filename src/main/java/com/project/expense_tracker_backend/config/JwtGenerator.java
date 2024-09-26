@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,8 @@ public class JwtGenerator {
     @Value("${jwt.expiration}")
     private long JWT_EXPIRATION_SECONDS;
 
-    public String generateToken(Authentication authentication) {
+    @Cacheable(value = ApplicationConstants.JWT_CACHE_NAME, key = "#authentication.principal.toString()")
+    public TokenPair generateToken(Authentication authentication) {
 
         SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(JWT_SECRET));
 
@@ -32,11 +34,18 @@ public class JwtGenerator {
 
         claims.put("email", email);
 
-        return Jwts.builder()
+        Date expirationDate = new Date(new Date().getTime() + JWT_EXPIRATION_SECONDS);
+
+        String token = Jwts.builder()
                 .subject(ApplicationConstants.JWT_SUBJECT)
                 .claims(claims)
-                .expiration(new Date(new Date().getTime() + JWT_EXPIRATION_SECONDS))
-                .signWith(secretKey)
+                .expiration(expirationDate)
+                .encryptWith(secretKey, Jwts.ENC.A128CBC_HS256)
                 .compact();
+
+        return new TokenPair(token, expirationDate);
+    }
+
+    public record TokenPair(String token, Date expiration) {
     }
 }

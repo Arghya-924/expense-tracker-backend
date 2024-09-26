@@ -61,7 +61,7 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
 
     private User fetchUserFromUserDetailsCache(String email) {
 
-        Cache cache = this.cacheManager.getCache(ApplicationConstants.USER_DETAILS_CACHE_NAME);
+        Cache cache = this.cacheManager.getCache(ApplicationConstants.USER_DETAILS_CACHE_NAME_BY_EMAIL);
 
         if (null == cache) {
             return null;

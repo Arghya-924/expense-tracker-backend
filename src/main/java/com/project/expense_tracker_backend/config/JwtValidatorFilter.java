@@ -58,12 +58,12 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
             Claims claims;
 
             try {
-                claims = Jwts.parser().verifyWith(key)
+                claims = Jwts.parser().decryptWith(key)
                         .build()
-                        .parseSignedClaims(token)
+                        .parseEncryptedClaims(token)
                         .getPayload();
             } catch (ExpiredJwtException expiredJwtException) {
-                log.error("Invalid Token received | {}", expiredJwtException.getLocalizedMessage());
+                log.error("Expired Token received | {}", expiredJwtException.getLocalizedMessage());
 
                 ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                         ApplicationConstants.STATUS_FAILURE,
