@@ -68,6 +68,8 @@ public class CacheConfig {
             // Calculate the duration until expiration in nanoseconds
             long durationMillis = expirationTimeMillis - currentTimeMillis;
 
+            log.info("Expire after create : {} ms", durationMillis);
+
             // Convert the duration from milliseconds to nanoseconds
             return TimeUnit.MILLISECONDS.toNanos(durationMillis);
         }
@@ -79,6 +81,7 @@ public class CacheConfig {
 
         @Override
         public long expireAfterRead(Object key, Object value, long currentTime, @NonNegative long currentDuration) {
+            log.info("Expire after read : {} ns", currentDuration);
             return currentDuration;
         }
     }
