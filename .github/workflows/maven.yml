@@ -32,7 +32,7 @@ jobs:
     - name: Build Docker Image
       run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/expense-tracker:${{ github.sha }} --build-arg JWT_EXPIRATION_SECONDS=${{ secrets.JWT_EXPIRATION_SECONDS }} --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} .
     - name: Log in to Docker Hub
-      run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+      run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_SECRET }}
     - name: Push Docker Image
       run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/expense-tracker:${{ github.sha }}
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
