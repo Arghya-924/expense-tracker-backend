@@ -31,7 +31,7 @@ jobs:
       run: mvn clean install
     - name: Build and Push Docker image (on merge only)
       run: |
-        if [[ ${{ github.event.action }} == 'pushed' ]]; then
+        if [[ -z "${{ github.event.action }}" || ${{ github.event.action }} == 'pushed' ]]; then
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/expense-tracker:${{ github.sha }} --build-arg JWT_EXPIRATION_SECONDS=${{ secrets.JWT_EXPIRATION_SECONDS }} --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} .
           docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_SECRET }}
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/expense-tracker:${{ github.sha }}
