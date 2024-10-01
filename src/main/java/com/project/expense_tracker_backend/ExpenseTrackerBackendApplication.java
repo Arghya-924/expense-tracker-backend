@@ -8,6 +8,10 @@ import com.project.expense_tracker_backend.repository.AggregateExpenseRepository
 import com.project.expense_tracker_backend.repository.CategoryRepository;
 import com.project.expense_tracker_backend.repository.ExpenseRepository;
 import com.project.expense_tracker_backend.repository.UserRepository;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.SpringApplication;
@@ -23,6 +27,8 @@ import java.util.Date;
 @SpringBootApplication
 @AllArgsConstructor
 @EnableCaching
+@OpenAPIDefinition(security = {@SecurityRequirement(name = "bearerToken")})
+@SecurityScheme(name = "bearerToken", type = SecuritySchemeType.HTTP, scheme = "bearer")
 public class ExpenseTrackerBackendApplication {
 
     private UserRepository userRepository;

@@ -36,7 +36,7 @@ public class ProjectSecurityConfig {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests ->
-                        requests.requestMatchers("/public/**", "/h2-console/**").permitAll()
+                        requests.requestMatchers("/public/**", "/h2-console/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(jwtValidatorFilter, UsernamePasswordAuthenticationFilter.class)
