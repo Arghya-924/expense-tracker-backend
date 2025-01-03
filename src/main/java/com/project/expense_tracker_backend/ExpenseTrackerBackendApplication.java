@@ -43,28 +43,28 @@ public class ExpenseTrackerBackendApplication {
     @PostConstruct
     public void init() {
 
-        Category category1 = new Category(0L, "Groceries");
-        Category category2 = new Category(0L, "Shopping");
+        Category category1 = new Category(null, "Groceries");
+        Category category2 = new Category(null, "Shopping");
 
         category1 = categoryRepository.save(category1);
         category2 = categoryRepository.save(category2);
 
-        User user1 = new User(0L, "Arghya", "test1@gmail.com", "$2a$10$AcxxmVRLWBX1cBDitvhBDeqGagTuE3.4VYF7SdE.46hNaq5uzdaKG", "1234456667", LocalDateTime.now(), LocalDateTime.now());
-        User user2 = new User(0L, "Ashmita", "test2@gmail.com", "$2a$10$yGbXyAkIObl5Om6j6k9/3esTdVwdAsa.OtZ3clFfOs4wsnKnznO5q", "1234567890", LocalDateTime.now(), LocalDateTime.now());
+        User user1 = new User(null, "Arghya", "test1@gmail.com", "$2a$10$AcxxmVRLWBX1cBDitvhBDeqGagTuE3.4VYF7SdE.46hNaq5uzdaKG", "1234456667", LocalDateTime.now(), LocalDateTime.now());
+        User user2 = new User(null, "Ashmita", "test2@gmail.com", "$2a$10$yGbXyAkIObl5Om6j6k9/3esTdVwdAsa.OtZ3clFfOs4wsnKnznO5q", "1234567890", LocalDateTime.now(), LocalDateTime.now());
 
         user1 = userRepository.save(user1);
         user2 = userRepository.save(user2);
 
-        Expense expense1 = new Expense(0L, "iPhone", 70000.0, LocalDate.now(), category2, user1);
-        Expense expense2 = new Expense(0L, "fish, eggs", 500.0, LocalDate.now(), category1, user2);
-        Expense expense3 = new Expense(0L, "iPad", 25000.0, LocalDate.now(), category2, user1);
+        Expense expense1 = new Expense(null, "iPhone", 70000.0, LocalDate.now(), category2, user1);
+        Expense expense2 = new Expense(null, "fish, eggs", 500.0, LocalDate.now(), category1, user2);
+        Expense expense3 = new Expense(null, "iPad", 25000.0, LocalDate.now(), category2, user1);
 
         expenseRepository.save(expense1);
         expenseRepository.save(expense2);
         expenseRepository.save(expense3);
 
-        AggregateExpense aggregateExpense1 = new AggregateExpense(0L, user1, Month.of(new Date().getMonth() + 1), Year.now().getValue(), (double) 95000);
-        AggregateExpense aggregateExpense2 = new AggregateExpense(0L, user2, Month.of(new Date().getMonth() + 1), Year.now().getValue(), (double) 500);
+        AggregateExpense aggregateExpense1 = new AggregateExpense(null, user1, Month.of(new Date().getMonth() + 1), Year.now().getValue(), (double) 95000);
+        AggregateExpense aggregateExpense2 = new AggregateExpense(null, user2, Month.of(new Date().getMonth() + 1), Year.now().getValue(), (double) 500);
 
         aggregateExpenseRepository.save(aggregateExpense1);
         aggregateExpenseRepository.save(aggregateExpense2);

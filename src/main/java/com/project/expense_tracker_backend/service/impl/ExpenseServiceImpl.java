@@ -1,10 +1,8 @@
 package com.project.expense_tracker_backend.service.impl;
 
-import com.project.expense_tracker_backend.constants.ApplicationConstants;
 import com.project.expense_tracker_backend.dto.ExpenseRequestDto;
 import com.project.expense_tracker_backend.dto.ExpenseResponseDto;
 import com.project.expense_tracker_backend.exception.ExpenseNotFoundException;
-import com.project.expense_tracker_backend.exception.UserNotFoundException;
 import com.project.expense_tracker_backend.mapper.ExpenseMapper;
 import com.project.expense_tracker_backend.model.AggregateExpense;
 import com.project.expense_tracker_backend.model.Category;
@@ -13,7 +11,6 @@ import com.project.expense_tracker_backend.model.User;
 import com.project.expense_tracker_backend.repository.AggregateExpenseRepository;
 import com.project.expense_tracker_backend.repository.CategoryRepository;
 import com.project.expense_tracker_backend.repository.ExpenseRepository;
-import com.project.expense_tracker_backend.repository.UserRepository;
 import com.project.expense_tracker_backend.service.IExpenseService;
 import com.project.expense_tracker_backend.service.UserDetailsService;
 import com.project.expense_tracker_backend.util.BeanUtil;
@@ -70,7 +67,7 @@ public class ExpenseServiceImpl implements IExpenseService {
 
             Category currentCategory = findOrCreateCategory(userExpense.getCategoryName());
 
-            Expense newExpense = expenseMapper.expenseRequestToExpenseMapper(0L, userExpense, currentCategory, user);
+            Expense newExpense = expenseMapper.expenseRequestToExpenseMapper(null, userExpense, currentCategory, user);
 
             ExpensesUtil.populateExpensePerYearMonthMap(newExpense, aggregatedExpensesPerMonthYear);
 
@@ -94,7 +91,7 @@ public class ExpenseServiceImpl implements IExpenseService {
             Double aggregateAmount = entry.getValue();
 
             // if aggregate expense for currentYearMonth exists, then this ID will be updated
-            Long aggregateExpenseId = 0L;
+            Long aggregateExpenseId = null;
 
             Optional<AggregateExpense> aggregateExpensePerYearMonth =
                     aggregateExpenseRepository.findAggregateExpenseByUserUserIdAndExpenseMonthAndExpenseYear(user.getUserId(), currentYearMonth.getMonth(), currentYearMonth.getYear());
@@ -127,7 +124,7 @@ public class ExpenseServiceImpl implements IExpenseService {
             return categoryOptional.get();
         }
 
-        Category newCategory = new Category(0L, categoryName);
+        Category newCategory = new Category(null, categoryName);
 
         return categoryRepository.save(newCategory);
     }
@@ -186,7 +183,7 @@ public class ExpenseServiceImpl implements IExpenseService {
             oldMonthAggregateExpense.setAmount(oldAggregateAmount);
             aggregateExpenseRepository.save(oldMonthAggregateExpense);
 
-            Long newAggregateExpenseId = 0L;
+            Long newAggregateExpenseId = null;
             Double newAggregateAmount = 0.0;
 
             Optional<AggregateExpense> optionalNewMonthAggregateExpense = aggregateExpenseRepository
