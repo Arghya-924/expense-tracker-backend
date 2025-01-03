@@ -20,9 +20,9 @@ public class ExpenseMapper {
         )).collect(Collectors.toList());
     }
 
-    public Expense expenseRequestToExpenseMapper(long expenseId, ExpenseRequestDto userExpense, Category currentCategory, User user) {
+    public Expense expenseRequestToExpenseMapper(Long expenseId, ExpenseRequestDto userExpense, Category currentCategory, User user) {
 
-        return new Expense(0L, userExpense.getDescription(),
+        return new Expense(expenseId, userExpense.getDescription(),
                 userExpense.getAmount(), userExpense.getDate(), currentCategory, user);
     }
 }

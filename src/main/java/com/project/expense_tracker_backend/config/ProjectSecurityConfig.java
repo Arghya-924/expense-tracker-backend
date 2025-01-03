@@ -31,10 +31,13 @@ public class ProjectSecurityConfig {
 
     private CacheManager cacheManager;
 
+    private CustomCorsConfiguration corsConfiguration;
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfiguration))
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers("/public/**", "/h2-console/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .anyRequest().authenticated());
