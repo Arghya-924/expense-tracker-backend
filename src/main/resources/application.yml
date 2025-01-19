@@ -23,8 +23,8 @@ logging:
     org:
       springframework:
         cache: TRACE
-        web: DEBUG
-      springdoc: DEBUG
+        web: INFO
+      springdoc: INFO
 
 
 
