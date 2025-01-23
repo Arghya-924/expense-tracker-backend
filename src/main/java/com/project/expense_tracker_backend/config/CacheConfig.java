@@ -12,6 +12,11 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -54,6 +59,8 @@ public class CacheConfig {
 
     static class JwtAuthTokenExpiry implements Expiry<Object, Object> {
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyy HH:mm:ss");
+
         @Override
         public long expireAfterCreate(Object key, Object value, long currentTime) {
 
@@ -62,13 +69,16 @@ public class CacheConfig {
             // Get the expiration time in milliseconds
             long expirationTimeMillis = tokenPair.expiration().getTime();
 
+            Instant instant = Instant.ofEpochMilli(expirationTimeMillis);
+            ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
+
+            log.info("Expire after create : {}", formatter.format(zonedDateTime));
+
             // Convert the current time from nanoseconds to milliseconds
             long currentTimeMillis = System.currentTimeMillis();
 
             // Calculate the duration until expiration in nanoseconds
             long durationMillis = expirationTimeMillis - currentTimeMillis;
-
-            log.info("Expire after create : {} ms", durationMillis);
 
             // Convert the duration from milliseconds to nanoseconds
             return TimeUnit.MILLISECONDS.toNanos(durationMillis);
@@ -81,7 +91,16 @@ public class CacheConfig {
 
         @Override
         public long expireAfterRead(Object key, Object value, long currentTime, @NonNegative long currentDuration) {
-            log.info("Expire after read : {} ns", currentDuration);
+
+            long currentTimeMillis = System.currentTimeMillis();
+
+            Instant currentInstant = Instant.ofEpochMilli(currentTimeMillis);
+            Duration duration = Duration.ofNanos(currentDuration);
+            Instant expirationInstant = currentInstant.plus(duration);
+
+            ZonedDateTime zonedDateTime = expirationInstant.atZone(ZoneId.systemDefault());
+
+            log.info("Expire after read : {}", formatter.format(zonedDateTime));
             return currentDuration;
         }
     }

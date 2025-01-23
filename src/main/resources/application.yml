@@ -23,6 +23,9 @@ logging:
     org:
       springframework:
         cache: TRACE
+        web: INFO
+      springdoc: INFO
+
 
 
 jwt:
