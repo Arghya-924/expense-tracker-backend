@@ -1,8 +1,12 @@
 package com.project.expense_tracker_backend.controller;
 
+import com.project.expense_tracker_backend.constants.ApplicationConstants;
 import com.project.expense_tracker_backend.dto.ExpenseRequestDto;
 import com.project.expense_tracker_backend.dto.ExpenseResponseDto;
 import com.project.expense_tracker_backend.dto.UserExpensesResponse;
+import com.project.expense_tracker_backend.exception.ExpenseNotFoundException;
+import com.project.expense_tracker_backend.exception.UserNotFoundException;
+import com.project.expense_tracker_backend.exception.YearMonthParseException;
 import com.project.expense_tracker_backend.service.IExpenseService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,13 +18,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ExpenseControllerTest {
 
@@ -33,21 +38,27 @@ class ExpenseControllerTest {
     @InjectMocks
     private ExpenseController expenseController;
 
+    private final Long defaultUserId = 1L;
+    private final String defaultUserIdStr = String.valueOf(defaultUserId);
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        // Common mock setup for userId
+        when(httpServletRequest.getAttribute(ApplicationConstants.REQUEST_USER_ID_ATTRIBUTE)).thenReturn(defaultUserIdStr);
     }
 
+    // Existing test modified for clarity and consistency
     @Test
-    void testGetUserExpenses() {
-        long userId = 1L;
+    void getUserExpenses_noYearMonth_success() {
         List<ExpenseResponseDto> mockExpenses = Arrays.asList(
                 new ExpenseResponseDto(1L, "Lunch", 20.0, LocalDate.now(), "Food"),
                 new ExpenseResponseDto(2L, "Groceries", 50.0, LocalDate.now(), "Shopping")
         );
+        double totalExpenses = 70.0;
 
-        when(httpServletRequest.getAttribute("userId")).thenReturn(String.valueOf(userId));
-        when(expenseService.getUserExpenses(null, userId)).thenReturn(mockExpenses);
+        when(expenseService.getUserExpenses(null, defaultUserId)).thenReturn(mockExpenses);
+        when(expenseService.getTotalMonthlyUserExpense(null, defaultUserId)).thenReturn(totalExpenses);
 
         ResponseEntity<UserExpensesResponse<List<ExpenseResponseDto>>> response =
                 expenseController.getUserExpenses(null, httpServletRequest);
