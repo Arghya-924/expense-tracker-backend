@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main}, ~{::title})}">
+<head>
+    <title th:fragment="title">Edit Expense</title>
+</head>
+<body>
+    <main th:fragment="main">
+        <h2>Edit Expense</h2>
+
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+        <!-- Ensure expenseDto is not null; it should be populated by the controller -->
+        <form th:if="${expenseDto != null}" 
+              th:action="@{/ui/expenses/update/{id}(id=${actualExpenseId})}" 
+              th:object="${expenseDto}" 
+              method="post">
+            
+            <div>
+                <label for="description">Description:</label>
+                <input type="text" id="description" th:field="*{description}" required autofocus />
+            </div>
+            <div>
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" th:field="*{amount}" step="0.01" required />
+            </div>
+            <div>
+                <label for="date">Date:</label>
+                <!-- Ensure date is formatted correctly for input type="date" (yyyy-MM-dd) -->
+                <input type="date" id="date" th:field="*{date}" required />
+            </div>
+            <div>
+                <label for="categoryName">Category:</label>
+                <input type="text" id="categoryName" th:field="*{categoryName}" required />
+            </div>
+            <div>
+                <button type="submit">Update Expense</button>
+                <a th:href="@{/ui/expenses/view}" style="margin-left: 10px;">Cancel</a>
+            </div>
+        </form>
+        <div th:if="${expenseDto == null}">
+            <p class="error-message">Expense data not found or could not be loaded for editing.</p>
+            <p><a th:href="@{/ui/expenses/view}">Return to Expenses List</a></p>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main}, ~{::title})}">
+<head>
+    <title th:fragment="title">Home Page</title>
+</head>
+<body>
+    <main th:fragment="main">
+        <h2>Welcome to the Expense Tracker!</h2>
+        <p>This is the home page. Navigate using the links above.</p>
+    </main>
+</body>
+</html>

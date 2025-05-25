@@ -21,6 +21,7 @@ public class ApplicationConstants {
     public static final String USER_DETAILS_CACHE_NAME_BY_ID = "user_details_id";
     public static final String JWT_CACHE_NAME = "jwt_cache";
     public static final String PASSWORD_CHANGED = "Password changed successfully";
+    public static final String JWT_COOKIE_NAME = "jwtToken";
     private ApplicationConstants() {
     }
 

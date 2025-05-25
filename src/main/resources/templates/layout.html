@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle ?: 'Expense Tracker'}">Expense Tracker</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <header>
+        <h1>Expense Tracker</h1>
+        <nav>
+            <ul>
+                <li><a th:href="@{/}">Home</a></li>
+                <li><a th:href="@{/public/ui/register}">Register</a></li>
+                <li><a th:href="@{/public/ui/login}">Login</a></li>
+                <li><a th:href="@{/ui/expenses/view}">My Expenses</a></li>
+                <li><a th:href="@{/ui/logout}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main th:fragment="content">
+        <!-- Content of specific pages will be inserted here -->
+        <p>This is placeholder content from layout.html.</p>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Expense Tracker App</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main}, ~{::title})}">
+<head>
+    <title th:fragment="title">Add New Expense</title>
+</head>
+<body>
+    <main th:fragment="main">
+        <h2>Add New Expense</h2>
+
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+        <form th:action="@{/ui/expenses/save}" th:object="${expenseRequestDto}" method="post">
+            <div>
+                <label for="description">Description:</label>
+                <input type="text" id="description" th:field="*{description}" required autofocus />
+                <!-- Example for displaying field-specific errors if using @Valid -->
+                <!-- <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error-message"></span> -->
+            </div>
+            <div>
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" th:field="*{amount}" step="0.01" required />
+                <!-- <span th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}" class="error-message"></span> -->
+            </div>
+            <div>
+                <label for="date">Date:</label>
+                <input type="date" id="date" th:field="*{date}" required />
+                <!-- <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="error-message"></span> -->
+            </div>
+            <div>
+                <label for="categoryName">Category:</label>
+                <input type="text" id="categoryName" th:field="*{categoryName}" required />
+                <!-- <span th:if="${#fields.hasErrors('categoryName')}" th:errors="*{categoryName}" class="error-message"></span> -->
+            </div>
+            <div>
+                <button type="submit">Save Expense</button>
+                <a th:href="@{/ui/expenses/view}" style="margin-left: 10px;">Cancel</a>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

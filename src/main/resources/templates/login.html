@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main}, ~{::title})}">
+<head>
+    <title th:fragment="title">User Login</title>
+</head>
+<body>
+    <main th:fragment="main">
+        <h2>User Login</h2>
+
+        <!-- Display success message (e.g., from registration redirect) -->
+        <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+
+        <!-- Display error message -->
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+        <form th:action="@{/public/ui/login}" th:object="${loginRequestDto == null} ? ${{email:'', password:''}} : ${loginRequestDto}" method="post">
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" th:field="*{email}" required autofocus />
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" th:field="*{password}" required />
+            </div>
+            <div>
+                <button type="submit">Login</button>
+            </div>
+        </form>
+        <p>Don't have an account? <a th:href="@{/public/ui/register}">Register here</a>.</p>
+    </main>
+</body>
+</html>

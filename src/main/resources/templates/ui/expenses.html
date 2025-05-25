@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main}, ~{::title})}">
+<head>
+    <title th:fragment="title">My Expenses</title>
+</head>
+<body>
+    <main th:fragment="main">
+        <h2>My Expenses</h2>
+
+        <!-- Display success/error messages from redirects (e.g., after add/update/delete) -->
+        <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+        
+        <!-- Link to Add Expense Page -->
+        <p><a th:href="@{/ui/expenses/add}" class="button-like">Add New Expense</a></p>
+
+        <div th:if="${userExpensesResponse != null && !userExpensesResponse.userExpenses.isEmpty()}">
+            <h3>Total for <span th:text="${currentYearMonth ?: 'Current View'}"></span>: <span th:text="${#numbers.formatCurrency(userExpensesResponse.totalAmount)}"></span></h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="expense : ${userExpensesResponse.userExpenses}">
+                        <td th:text="${expense.description}">Lunch</td>
+                        <td th:text="${#numbers.formatCurrency(expense.amount)}">$12.50</td>
+                        <td th:text="${#temporals.format(expense.date, 'yyyy-MM-dd')}">2023-10-27</td>
+                        <td th:text="${expense.categoryName}">Food</td>
+                        <td>
+                            <a th:href="@{'/ui/expenses/edit/' + ${expense.expenseId}}">Edit</a>
+                            <!-- Add delete link/button later -->
+                            <a th:href="@{'/ui/expenses/delete/' + ${expense.expenseId}}"
+                               onclick="return confirm('Are you sure you want to delete this expense?');">Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${userExpensesResponse == null || userExpensesResponse.userExpenses.isEmpty()}">
+            <p>No expenses found for <span th:text="${currentYearMonth ?: 'the current view'}"></span>.</p>
+        </div>
+        
+        <!-- Year Month Filter Form -->
+        <form th:action="@{/ui/expenses/view}" method="get">
+            <div>
+                <label for="yearMonth">Filter by Year-Month (yyyy-MM):</label>
+                <input type="text" id="yearMonth" name="yearMonth" th:value="${currentYearMonth}" placeholder="e.g., 2023-10" />
+                <button type="submit">Filter</button>
+            </div>
+        </form>
+
+    </main>
+</body>
+</html>
