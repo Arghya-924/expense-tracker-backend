@@ -1,7 +1,5 @@
 package com.project.expense_tracker_backend;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.expense_tracker_backend.config.JwtGenerator;
 import com.project.expense_tracker_backend.constants.ApplicationConstants;
 import com.project.expense_tracker_backend.dto.*;
@@ -19,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +27,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDate;
@@ -109,7 +109,7 @@ class ExpenseTrackerBackendApplicationTests {
         assertEquals(String.format(ApplicationConstants.EMAIL_NOT_FOUND, "invalid_user@gmail.com"),
                 errorResponseDto.getErrorMessage().getFirst());
 
-        assertSame(errorResponseDto.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertSame(HttpStatus.BAD_REQUEST, errorResponseDto.getStatusCode());
         assertTrue(errorResponseDto.getApiPath().contains("/public/login"));
     }
 
@@ -134,7 +134,7 @@ class ExpenseTrackerBackendApplicationTests {
         assertEquals(ApplicationConstants.BAD_CREDENTIALS,
                 errorResponseDto.getErrorMessage().getFirst());
 
-        assertSame(errorResponseDto.getStatusCode(), HttpStatus.FORBIDDEN);
+        assertSame(HttpStatus.FORBIDDEN, errorResponseDto.getStatusCode());
         assertTrue(errorResponseDto.getApiPath().contains("/public/login"));
 
     }
@@ -282,7 +282,7 @@ class ExpenseTrackerBackendApplicationTests {
         updateExpense.setAmount(100.0);
         updateExpense.setDescription("aloo, pyaaj");
 
-        var mockPatch = mockMvc.perform(MockMvcRequestBuilders.put("/api/expenses/{expenseId}", 2)
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/expenses/{expenseId}", 2)
                         .header("Authorization", "Bearer " + mockLogin.getAuthToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateExpense)))
@@ -565,17 +565,17 @@ class ExpenseTrackerBackendApplicationTests {
         var loginResponse = loginUser("test1@gmail.com", "12345");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/user/changePass")
-                .header("Authorization", "Bearer " + loginResponse.getAuthToken())
-                .contentType(MediaType.TEXT_PLAIN)
-                .content("newPassword"))
+                        .header("Authorization", "Bearer " + loginResponse.getAuthToken())
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content("newPassword"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         // try login in with old password
         LoginRequestDto loginRequestDto = new LoginRequestDto("test1@gmail.com", "12345");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/pubic/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequestDto)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequestDto)))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
 
         // try login with new password
