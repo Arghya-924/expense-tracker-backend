@@ -5,7 +5,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Expiry;
 import com.project.expense_tracker_backend.constants.ApplicationConstants;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.index.qual.NonNegative;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -85,12 +84,12 @@ public class CacheConfig {
         }
 
         @Override
-        public long expireAfterUpdate(Object key, Object value, long currentTime, @NonNegative long currentDuration) {
+        public long expireAfterUpdate(Object key, Object value, long currentTime, long currentDuration) {
             return currentDuration;
         }
 
         @Override
-        public long expireAfterRead(Object key, Object value, long currentTime, @NonNegative long currentDuration) {
+        public long expireAfterRead(Object key, Object value, long currentTime, long currentDuration) {
 
             long currentTimeMillis = System.currentTimeMillis();
 

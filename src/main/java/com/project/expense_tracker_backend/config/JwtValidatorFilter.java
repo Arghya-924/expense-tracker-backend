@@ -1,6 +1,5 @@
 package com.project.expense_tracker_backend.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.expense_tracker_backend.constants.ApplicationConstants;
 import com.project.expense_tracker_backend.dto.ErrorResponseDto;
 import com.project.expense_tracker_backend.exception.EmailNotFoundException;
@@ -25,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tools.jackson.databind.ObjectMapper;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
