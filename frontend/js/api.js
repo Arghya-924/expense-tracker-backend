@@ -27,11 +27,10 @@ async function fetchWithAuth(url, options = {}) {
         headers
     });
 
-    // Handle 401 Unauthorized - redirect to login
+    // Handle 401 Unauthorized or 403 Forbidden - session expired
     if (response.status === 401 || response.status === 403) {
-        Auth.removeToken();
-        window.location.href = 'index.html';
-        throw new Error('Session expired. Please login again.');
+        Auth.handleSessionExpiry('Your session has expired. Please login again to continue.');
+        throw new Error('Session expired');
     }
 
     return response;

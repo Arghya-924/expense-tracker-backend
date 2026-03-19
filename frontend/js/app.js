@@ -161,6 +161,11 @@ function initMonthFilter() {
         option.textContent = label;
         select.appendChild(option);
     }
+
+    // Set current month as default
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    select.value = currentMonth;
+    currentYearMonth = currentMonth;
 }
 
 /**

@@ -218,6 +218,69 @@ function redirectIfAuthenticated() {
     return false;
 }
 
+// ============================================
+// SESSION EXPIRY & RETURN URL MANAGEMENT
+// ============================================
+
+const RETURN_URL_KEY = 'expense_tracker_return_url';
+const SESSION_EXPIRY_KEY = 'expense_tracker_session_expired';
+
+/**
+ * Save the return URL for redirect after login
+ * @param {string} url - URL to return to after login
+ */
+function saveReturnUrl(url) {
+    if (url && !url.includes('index.html')) {
+        localStorage.setItem(RETURN_URL_KEY, url);
+    }
+}
+
+/**
+ * Get and clear the saved return URL
+ * @returns {string|null} - The saved return URL or null
+ */
+function getReturnUrl() {
+    const url = localStorage.getItem(RETURN_URL_KEY);
+    localStorage.removeItem(RETURN_URL_KEY);
+    return url;
+}
+
+/**
+ * Mark session as expired with a message
+ * @param {string} message - Message to display on login page
+ */
+function setSessionExpiredMessage(message) {
+    sessionStorage.setItem(SESSION_EXPIRY_KEY, message);
+}
+
+/**
+ * Get and clear the session expired message
+ * @returns {string|null} - The session expired message or null
+ */
+function getSessionExpiredMessage() {
+    const message = sessionStorage.getItem(SESSION_EXPIRY_KEY);
+    sessionStorage.removeItem(SESSION_EXPIRY_KEY);
+    return message;
+}
+
+/**
+ * Handle session expiry - clear token, save return URL, show message, redirect
+ * @param {string} message - User-friendly message about the expiry
+ */
+function handleSessionExpiry(message = 'Your session has expired. Please login again.') {
+    // Clear the expired token
+    removeToken();
+
+    // Save current page URL for redirect after login
+    saveReturnUrl(window.location.href);
+
+    // Set the expiry message to show on login page
+    setSessionExpiredMessage(message);
+
+    // Redirect to login page
+    window.location.href = 'index.html';
+}
+
 // Export for use in other modules
 window.Auth = {
     saveToken,
@@ -230,5 +293,9 @@ window.Auth = {
     logout,
     protectRoute,
     redirectIfAuthenticated,
+    getReturnUrl,
+    getSessionExpiredMessage,
+    handleSessionExpiry,
     API_BASE_URL
 };
+
