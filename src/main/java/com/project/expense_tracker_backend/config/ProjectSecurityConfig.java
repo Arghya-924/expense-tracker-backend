@@ -2,6 +2,8 @@ package com.project.expense_tracker_backend.config;
 
 import com.project.expense_tracker_backend.service.UserDetailsService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.util.List;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
@@ -35,7 +38,6 @@ public class ProjectSecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
-
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfiguration))
                 .authorizeHttpRequests(requests ->

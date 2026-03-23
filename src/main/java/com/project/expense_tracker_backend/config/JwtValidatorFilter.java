@@ -38,18 +38,23 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
     @Value("${jwt.secret}")
     private String JWT_SECRET;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+
+    public JwtValidatorFilter(UserRepository userRepository, ObjectMapper objectMapper) {
+        this.userRepository = userRepository;
+        this.objectMapper = objectMapper;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         String token = request.getHeader(ApplicationConstants.JWT_AUTH_HEADER);
 
-        if (token != null && token.startsWith("Bearer") && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (token != null && token.startsWith("Bearer")
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             token = token.substring(7);
 
@@ -67,13 +72,12 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
 
                 ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                         ApplicationConstants.STATUS_FAILURE,
-                        HttpStatus.BAD_REQUEST,
+                        HttpStatus.UNAUTHORIZED,
                         request.getRequestURI(),
-                        List.of(expiredJwtException.getLocalizedMessage())
-                );
+                        List.of("Session expired. Please login again."));
 
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
                 response.getWriter().write(objectMapper.writeValueAsString(errorResponseDto));
 
@@ -86,8 +90,7 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
                         ApplicationConstants.STATUS_FAILURE,
                         HttpStatus.FORBIDDEN,
                         request.getRequestURI(),
-                        List.of(exception.getLocalizedMessage())
-                );
+                        List.of(exception.getLocalizedMessage()));
 
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.setStatus(HttpStatus.FORBIDDEN.value());
@@ -102,8 +105,8 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
 
             log.info("Email received from token: {}", email);
 
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(email, null, List.of());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email,
+                    null, List.of());
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             request.setAttribute(ApplicationConstants.REQUEST_USER_ID_ATTRIBUTE, userId);
@@ -115,7 +118,8 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
-        if (optionalUser.isEmpty()) throw new EmailNotFoundException(ApplicationConstants.EMAIL_NOT_FOUND, email);
+        if (optionalUser.isEmpty())
+            throw new EmailNotFoundException(ApplicationConstants.EMAIL_NOT_FOUND, email);
 
         return optionalUser.get().getUserId();
     }
@@ -128,6 +132,6 @@ public class JwtValidatorFilter extends OncePerRequestFilter {
 
         return whitelisted.contains(request.getServletPath());
 
-//        return request.getServletPath().equals("/public/login");
+        // return request.getServletPath().equals("/public/login");
     }
 }

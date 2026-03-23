@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Expense Tracker - Track and manage your personal expenses efficiently">
+    <title>Expense Tracker - Login</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <main class="auth-page">
+        <div class="auth-container">
+            <!-- Header -->
+            <header class="auth-header">
+                <h1 class="auth-logo">💰 ExpenseTracker</h1>
+                <p class="auth-subtitle">Take control of your finances</p>
+            </header>
+
+            <!-- Auth Card -->
+            <div class="auth-card glass-card">
+                <!-- Tabs -->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login" id="loginTab">Login</button>
+                    <button class="auth-tab" data-tab="register" id="registerTab">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <form class="auth-form active" id="loginForm">
+                    <div id="loginAlert" class="alert alert-error"></div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="loginEmail">Email Address</label>
+                        <input type="email" class="form-input" id="loginEmail" name="email"
+                            placeholder="Enter your email" required autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="loginPassword">Password</label>
+                        <input type="password" class="form-input" id="loginPassword" name="password"
+                            placeholder="Enter your password" required autocomplete="current-password">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="loginBtn">
+                        Sign In
+                    </button>
+                </form>
+
+                <!-- Register Form -->
+                <form class="auth-form" id="registerForm">
+                    <div id="registerAlert" class="alert"></div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerName">Full Name</label>
+                        <input type="text" class="form-input" id="registerName" name="name"
+                            placeholder="Enter your full name" required autocomplete="name">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerEmail">Email Address</label>
+                        <input type="email" class="form-input" id="registerEmail" name="email"
+                            placeholder="Enter your email" required autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerPassword">Password</label>
+                        <input type="password" class="form-input" id="registerPassword" name="password"
+                            placeholder="Create a password" required minlength="5" autocomplete="new-password">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerMobile">Mobile Number</label>
+                        <input type="tel" class="form-input" id="registerMobile" name="mobileNumber"
+                            placeholder="Enter your mobile number" required autocomplete="tel">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="registerBtn">
+                        Create Account
+                    </button>
+                </form>
+
+                <!-- Footer -->
+                <div class="auth-footer">
+                    <p>Demo credentials: <strong>test1@gmail.com</strong> / <strong>12345</strong></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast toast-warning"></div>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        // DOM Elements
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginAlert = document.getElementById('loginAlert');
+        const registerAlert = document.getElementById('registerAlert');
+        const toast = document.getElementById('toast');
+
+        // Check for session expiry message on page load
+        const expiryMessage = Auth.getSessionExpiredMessage();
+        if (expiryMessage) {
+            showToast(expiryMessage, 'warning');
+        }
+
+        // Redirect if already authenticated
+        Auth.redirectIfAuthenticated();
+
+        // Toast notification function
+        function showToast(message, type = 'warning') {
+            toast.textContent = message;
+            toast.className = `toast toast-${type} show`;
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+            } else {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+            }
+            // Clear alerts
+            loginAlert.classList.remove('show');
+            registerAlert.classList.remove('show');
+        }
+
+        loginTab.addEventListener('click', () => switchTab('login'));
+        registerTab.addEventListener('click', () => switchTab('register'));
+
+        // Show alert
+        function showAlert(element, message, type = 'error') {
+            element.textContent = message;
+            element.className = `alert alert-${type} show`;
+        }
+
+        // Login form handler
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            const originalText = btn.innerHTML;
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span> Signing in...';
+                loginAlert.classList.remove('show');
+
+                await Auth.login(email, password);
+
+                // Check for return URL (from session expiry redirect)
+                const returnUrl = Auth.getReturnUrl();
+                if (returnUrl) {
+                    window.location.href = returnUrl;
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+
+            } catch (error) {
+                showAlert(loginAlert, error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        // Register form handler
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const userData = {
+                name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                mobileNumber: document.getElementById('registerMobile').value
+            };
+
+            const btn = document.getElementById('registerBtn');
+            const originalText = btn.innerHTML;
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span> Creating account...';
+                registerAlert.classList.remove('show');
+
+                await Auth.register(userData);
+
+                showAlert(registerAlert, 'Account created successfully! Please login.', 'success');
+
+                // Reset form and switch to login
+                registerForm.reset();
+                setTimeout(() => switchTab('login'), 1500);
+
+            } catch (error) {
+                showAlert(registerAlert, error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+    </script>
+</body>
+
+</html>
