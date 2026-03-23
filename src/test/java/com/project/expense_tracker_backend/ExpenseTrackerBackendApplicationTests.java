@@ -153,13 +153,12 @@ class ExpenseTrackerBackendApplicationTests {
         @Order(5)
         void testGetUserExpensesFromExpenseController() throws Exception {
 
-                long userId = 1L;
-
                 LoginResponseDto mockLogin = loginUser("test1@gmail.com", "12345");
 
                 var apiResponse = mockMvc.perform(MockMvcRequestBuilders.get("/api/expenses")
                                 .header("Authorization", "Bearer " + mockLogin.getAuthToken())
                                 // .param("userId", String.valueOf(userId))
+                                .param("yearMonth", "2026-01")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(MockMvcResultMatchers.status().isOk());
 
