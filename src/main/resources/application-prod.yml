@@ -1,0 +1,39 @@
+server:
+  # Heroku dynamically assigns a port to this environment variable.
+  # If it's not present (e.g., local testing of prod profile), it defaults to 8080.
+  port: ${PORT:9090}
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    # Production-grade connection pooling configuration
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      # CRITICAL: Never use 'update' or 'create' in production.
+      # 'validate' ensures the schema matches your Java entities but will not alter tables.
+      ddl-auto: validate
+    # Disable SQL logging in production to save I/O cycles and prevent sensitive data leaks
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+
+logging:
+  level:
+    root: INFO
+#    com.project.expense_tracker_backend: INFO
+#    # Suppress verbose framework logs in production unless absolutely necessary
+#    org.springframework.web: WARN
+#    org.hibernate: WARN
